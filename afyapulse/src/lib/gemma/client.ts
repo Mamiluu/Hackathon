@@ -31,6 +31,8 @@ export interface ContentPart {
   inlineData?: { mimeType: string; data: string };
   functionCall?: FunctionCall;
   functionResponse?: { name: string; response: Record<string, unknown> };
+  /** Gemma 4's reasoning trace, when thinking mode is on. Never part of the answer shown to users. */
+  thought?: boolean;
 }
 
 export interface Content {
@@ -60,6 +62,8 @@ export async function generateContent(opts: {
       contents: opts.contents,
       systemInstruction: opts.systemInstruction ? { parts: [{ text: opts.systemInstruction }] } : undefined,
       tools: opts.tools ? [{ functionDeclarations: opts.tools }] : undefined,
+      // We want a direct answer, not a visible chain-of-thought -- turn thinking off.
+      generationConfig: { thinkingConfig: { thinkingBudget: 0 } },
     }),
   });
 
@@ -72,7 +76,9 @@ export async function generateContent(opts: {
   const candidate = json.candidates?.[0];
   const parts: ContentPart[] = candidate?.content?.parts ?? [];
 
+  // Defensive filter: even with thinking disabled, never surface a `thought` part as the answer.
   const text = parts
+    .filter((p) => !p.thought)
     .map((p) => p.text)
     .filter(Boolean)
     .join("\n");
