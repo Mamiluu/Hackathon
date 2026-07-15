@@ -188,6 +188,22 @@ const dict = {
     en: "{facility}: {count} test kit type(s) unavailable today",
     sw: "{facility}: aina {count} za vifaa vya uchunguzi hazipatikani leo",
   },
+
+  // Facility card / type labels
+  typeDispensary: { en: "Dispensary", sw: "Zahanati" },
+  typeHealthCentre: { en: "Health Centre", sw: "Kituo cha Afya" },
+  typeDistrictHospital: { en: "District Hospital", sw: "Hospitali ya Wilaya" },
+  wardSuffix: { en: "Ward", sw: "Kata" },
+  bedsShort: { en: "Beds", sw: "Vitanda" },
+  staffPresent: { en: "Staff present", sw: "Wafanyakazi Waliopo" },
+  footfallTodayShort: { en: "Footfall today", sw: "Wagonjwa Leo" },
+  riskLow: { en: "Low", sw: "Chini" },
+  riskCritical: { en: "Critical", sw: "Dharura" },
+
+  redistReasoning: {
+    en: "{dest} has {days} days of {item} remaining. {source} holds surplus {unit} above its own 10-day safety buffer, {distance}km away (~{minutes} min by road).",
+    sw: "{dest} ina siku {days} za {item} zilizobaki. {source} ina ziada ya {unit} zaidi ya akiba yake ya dharura ya siku 10, umbali wa kilomita {distance} (~dakika {minutes} kwa barabara).",
+  },
 } as const;
 
 export type TranslationKey = keyof typeof dict;

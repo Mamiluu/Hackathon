@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { LANG_COOKIE_NAME } from "@/lib/i18n/getLang";
+import { LANG_COOKIE_NAME } from "@/lib/i18n/constants";
 import type { Lang } from "@/lib/i18n/translations";
 import { LANGUAGE_LABEL } from "@/lib/i18n/translations";
 

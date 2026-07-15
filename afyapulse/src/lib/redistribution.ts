@@ -1,6 +1,7 @@
 import { STOCK_ITEMS, FACILITIES, getFacility, getLatestStock, getRedistributionOverride } from "./data/store";
 import { getRedistributionProposals } from "./forecastingClient";
 import type { AlertSeverity, RedistributionProposal } from "./data/types";
+import { t, type Lang } from "./i18n/translations";
 
 const ESSENTIAL_CATEGORIES = new Set(["antimalarial", "antibiotic", "maternal"]);
 
@@ -10,7 +11,7 @@ function urgencyFor(daysRemaining: number): AlertSeverity {
   return "info";
 }
 
-export async function computeAllProposals(): Promise<{ proposals: RedistributionProposal[]; serviceUnavailable: boolean }> {
+export async function computeAllProposals(lang: Lang = "en"): Promise<{ proposals: RedistributionProposal[]; serviceUnavailable: boolean }> {
   const essentialItems = STOCK_ITEMS.filter((i) => ESSENTIAL_CATEGORIES.has(i.category));
   const proposals: RedistributionProposal[] = [];
   let anyUnavailable = false;
@@ -30,24 +31,33 @@ export async function computeAllProposals(): Promise<{ proposals: Redistribution
     const { transfers, unavailable } = await getRedistributionProposals(positions);
     if (unavailable) anyUnavailable = true;
 
-    for (const t of transfers) {
-      const id = `redis-${item.id}-${t.sourceFacilityId}-${t.destFacilityId}`;
-      const destLatest = getLatestStock(t.destFacilityId, item.id);
+    for (const transfer of transfers) {
+      const id = `redis-${item.id}-${transfer.sourceFacilityId}-${transfer.destFacilityId}`;
+      const destLatest = getLatestStock(transfer.destFacilityId, item.id);
       const destDaysRemaining = destLatest && destLatest.dailyConsumption > 0 ? destLatest.quantityOnHand / destLatest.dailyConsumption : 0;
-      const sourceFacility = getFacility(t.sourceFacilityId);
-      const destFacility = getFacility(t.destFacilityId);
+      const sourceFacility = getFacility(transfer.sourceFacilityId);
+      const destFacility = getFacility(transfer.destFacilityId);
       const override = getRedistributionOverride(id);
 
       proposals.push({
         id,
-        sourceFacilityId: t.sourceFacilityId,
-        destFacilityId: t.destFacilityId,
+        sourceFacilityId: transfer.sourceFacilityId,
+        destFacilityId: transfer.destFacilityId,
         itemId: item.id,
-        quantity: t.quantity,
+        quantity: transfer.quantity,
         urgency: urgencyFor(destDaysRemaining),
-        estTransitMinutes: t.estTransitMinutes,
+        estTransitMinutes: transfer.estTransitMinutes,
+        distanceKm: transfer.distanceKm,
         status: override?.status ?? "proposed",
-        reasoning: `${destFacility?.name} has ${destDaysRemaining.toFixed(1)} days of ${item.name} remaining. ${sourceFacility?.name} holds surplus ${item.unit} above its own 10-day safety buffer, ${t.distanceKm}km away (~${t.estTransitMinutes} min by road).`,
+        reasoning: t("redistReasoning", lang, {
+          dest: destFacility?.name ?? transfer.destFacilityId,
+          days: destDaysRemaining.toFixed(1),
+          item: item.name,
+          source: sourceFacility?.name ?? transfer.sourceFacilityId,
+          unit: item.unit,
+          distance: transfer.distanceKm,
+          minutes: transfer.estTransitMinutes,
+        }),
         brief: override?.brief,
         createdAt: new Date().toISOString(),
       });

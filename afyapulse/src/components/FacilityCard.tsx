@@ -2,15 +2,15 @@ import Link from "next/link";
 import type { FacilitySnapshot } from "@/lib/data/types";
 import { HealthMeter } from "./HealthMeter";
 import { StatusPill } from "./StatusPill";
-import { titleCase } from "@/lib/utils";
+import { t, type Lang } from "@/lib/i18n/translations";
 
-const TYPE_LABEL: Record<string, string> = {
-  dispensary: "Dispensary",
-  health_centre: "Health Centre",
-  district_hospital: "District Hospital",
-};
+const TYPE_LABEL_KEY = {
+  dispensary: "typeDispensary",
+  health_centre: "typeHealthCentre",
+  district_hospital: "typeDistrictHospital",
+} as const;
 
-export function FacilityCard({ snapshot }: { snapshot: FacilitySnapshot }) {
+export function FacilityCard({ snapshot, lang = "en" }: { snapshot: FacilitySnapshot; lang?: Lang }) {
   const { facility, healthScore, stockRisk, bedOccupancyPct, doctorAttendancePct, footfallToday, alerts } = snapshot;
   const worstAlert = alerts[0];
 
@@ -23,11 +23,14 @@ export function FacilityCard({ snapshot }: { snapshot: FacilitySnapshot }) {
         <div>
           <div className="text-sm font-semibold text-ink-primary group-hover:text-series-1">{facility.name}</div>
           <div className="text-xs text-ink-muted">
-            {TYPE_LABEL[facility.type]} · {facility.ward} Ward
+            {t(TYPE_LABEL_KEY[facility.type], lang)} · {facility.ward} {t("wardSuffix", lang)}
           </div>
         </div>
         {stockRisk !== "ok" && (
-          <StatusPill severity={stockRisk === "critical" ? "critical" : "warning"} text={titleCase(stockRisk)} />
+          <StatusPill
+            severity={stockRisk === "critical" ? "critical" : "warning"}
+            text={stockRisk === "critical" ? t("riskCritical", lang) : t("riskLow", lang)}
+          />
         )}
       </div>
 
@@ -37,15 +40,15 @@ export function FacilityCard({ snapshot }: { snapshot: FacilitySnapshot }) {
 
       <div className="mt-4 grid grid-cols-3 gap-3 text-xs">
         <div>
-          <div className="text-ink-muted">Beds</div>
+          <div className="text-ink-muted">{t("bedsShort", lang)}</div>
           <div className="mt-0.5 font-medium tabular text-ink-primary">{bedOccupancyPct}%</div>
         </div>
         <div>
-          <div className="text-ink-muted">Staff present</div>
+          <div className="text-ink-muted">{t("staffPresent", lang)}</div>
           <div className="mt-0.5 font-medium tabular text-ink-primary">{doctorAttendancePct}%</div>
         </div>
         <div>
-          <div className="text-ink-muted">Footfall today</div>
+          <div className="text-ink-muted">{t("footfallTodayShort", lang)}</div>
           <div className="mt-0.5 font-medium tabular text-ink-primary">{footfallToday}</div>
         </div>
       </div>

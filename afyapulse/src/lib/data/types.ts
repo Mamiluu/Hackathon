@@ -73,6 +73,7 @@ export interface RedistributionProposal {
   quantity: number;
   urgency: AlertSeverity;
   estTransitMinutes: number;
+  distanceKm: number;
   status: RedistributionStatus;
   reasoning: string;
   brief?: string; // Gemma-generated dispatch brief
