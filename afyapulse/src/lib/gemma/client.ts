@@ -62,8 +62,9 @@ export async function generateContent(opts: {
       contents: opts.contents,
       systemInstruction: opts.systemInstruction ? { parts: [{ text: opts.systemInstruction }] } : undefined,
       tools: opts.tools ? [{ functionDeclarations: opts.tools }] : undefined,
-      // We want a direct answer, not a visible chain-of-thought -- turn thinking off.
-      generationConfig: { thinkingConfig: { thinkingBudget: 0 } },
+      // Note: thinkingConfig (to disable the reasoning trace outright) is rejected by this
+      // model ("Thinking budget is not supported for this model"), so we filter thought
+      // parts out of the response below instead.
     }),
   });
 
