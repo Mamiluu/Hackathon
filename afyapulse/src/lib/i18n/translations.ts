@@ -169,6 +169,25 @@ const dict = {
   confidenceHigh: { en: "high confidence", sw: "uhakika wa juu" },
   confidenceMedium: { en: "medium confidence", sw: "uhakika wa kati" },
   confidenceLow: { en: "low confidence", sw: "uhakika wa chini" },
+
+  // Alert message templates
+  alertStockoutDays: {
+    en: "{item} at {facility}: {days} days remaining",
+    sw: "{item} katika {facility}: siku {days} zimebaki",
+  },
+  alertStockoutUnknown: {
+    en: "{item} at {facility}: no consumption data",
+    sw: "{item} katika {facility}: hakuna data ya matumizi",
+  },
+  alertBedPressure: { en: "{facility} beds at {pct}% occupancy", sw: "Vitanda vya {facility} vimejaa {pct}%" },
+  alertDoctorAbsence: {
+    en: "{facility}: only {present}/{scheduled} scheduled staff present today",
+    sw: "{facility}: wafanyakazi {present}/{scheduled} tu waliopangwa wapo leo",
+  },
+  alertTestUnavailable: {
+    en: "{facility}: {count} test kit type(s) unavailable today",
+    sw: "{facility}: aina {count} za vifaa vya uchunguzi hazipatikani leo",
+  },
 } as const;
 
 export type TranslationKey = keyof typeof dict;
