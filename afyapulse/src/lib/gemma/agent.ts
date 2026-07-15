@@ -1,12 +1,16 @@
 import { generateContent, isGemmaConfigured, type Content } from "./client";
 import { TOOL_DECLARATIONS, executeTool } from "./tools";
 import { getAllAlerts } from "@/lib/data/alertEngine";
+import { LANGUAGE_NAME, type Lang } from "@/lib/i18n/translations";
 
-const SYSTEM_INSTRUCTION =
-  "You are the AfyaPulse Copilot, an assistant for the District Health Officer overseeing primary health " +
-  "facilities in Kilifi County, Kenya. Answer using the provided tools to fetch live facility, stock, forecast, " +
-  "and redistribution data -- never invent numbers. Be concise and operational: name facilities and figures " +
-  "directly. If a question needs data you don't have a tool for, say so plainly.";
+function systemInstruction(lang: Lang) {
+  return (
+    "You are the AfyaPulse Copilot, an assistant for the District Health Officer overseeing primary health " +
+    "facilities in Kilifi County, Kenya. Answer using the provided tools to fetch live facility, stock, forecast, " +
+    "and redistribution data -- never invent numbers. Be concise and operational: name facilities and figures " +
+    `directly. Respond entirely in ${LANGUAGE_NAME[lang]}. If a question needs data you don't have a tool for, say so plainly.`
+  );
+}
 
 const MAX_TOOL_ROUNDS = 4;
 
@@ -16,18 +20,22 @@ export interface CopilotTurnResult {
   toolsUsed: string[];
 }
 
-async function mockTurn(userMessage: string): Promise<CopilotTurnResult> {
+async function mockTurn(userMessage: string, lang: Lang): Promise<CopilotTurnResult> {
   const lower = userMessage.toLowerCase();
   const toolsUsed: string[] = [];
 
-  if (lower.includes("risk") || lower.includes("stockout") || lower.includes("stock-out") || lower.includes("critical")) {
+  const riskWords = ["risk", "stockout", "stock-out", "critical", "hatari", "dharura"];
+  if (riskWords.some((w) => lower.includes(w))) {
     toolsUsed.push("list_at_risk_facilities");
-    const alerts = getAllAlerts().slice(0, 5);
+    const alerts = getAllAlerts(lang).slice(0, 5);
     const lines = alerts.map((a) => `- ${a.message}`).join("\n");
     return {
       text:
-        `(Offline draft — connect GEMINI_API_KEY for live Gemma 4 reasoning)\n` +
-        `Top facility risks right now:\n${lines || "No active alerts."}`,
+        lang === "sw"
+          ? `(Rasimu ya Nje ya Mtandao — unganisha GEMINI_API_KEY kwa uwezo halisi wa Gemma 4)\n` +
+            `Hatari kuu za vituo sasa hivi:\n${lines || "Hakuna tahadhari zinazoendelea."}`
+          : `(Offline draft — connect GEMINI_API_KEY for live Gemma 4 reasoning)\n` +
+            `Top facility risks right now:\n${lines || "No active alerts."}`,
       mocked: true,
       toolsUsed,
     };
@@ -35,9 +43,13 @@ async function mockTurn(userMessage: string): Promise<CopilotTurnResult> {
 
   return {
     text:
-      "(Offline draft — connect GEMINI_API_KEY for live Gemma 4 reasoning) " +
-      "I can answer questions about facility status, stock forecasts, and redistribution proposals once connected. " +
-      "Try asking: \"which facilities are at stockout risk?\"",
+      lang === "sw"
+        ? "(Rasimu ya Nje ya Mtandao — unganisha GEMINI_API_KEY kwa uwezo halisi wa Gemma 4) " +
+          "Naweza kujibu maswali kuhusu hali ya vituo, utabiri wa akiba, na mapendekezo ya ugawaji nikiwa nimeunganishwa. " +
+          "Jaribu kuuliza: \"ni vituo gani viko hatarini kuishiwa na dawa?\""
+        : "(Offline draft — connect GEMINI_API_KEY for live Gemma 4 reasoning) " +
+          "I can answer questions about facility status, stock forecasts, and redistribution proposals once connected. " +
+          "Try asking: \"which facilities are at stockout risk?\"",
     mocked: true,
     toolsUsed,
   };
@@ -45,9 +57,10 @@ async function mockTurn(userMessage: string): Promise<CopilotTurnResult> {
 
 export async function runCopilotTurn(
   history: { role: "user" | "model"; text: string }[],
-  userMessage: string
+  userMessage: string,
+  lang: Lang = "en"
 ): Promise<CopilotTurnResult> {
-  if (!isGemmaConfigured) return mockTurn(userMessage);
+  if (!isGemmaConfigured) return mockTurn(userMessage, lang);
 
   const contents: Content[] = [
     ...history.map((h) => ({ role: h.role, parts: [{ text: h.text }] }) as Content),
@@ -60,7 +73,7 @@ export async function runCopilotTurn(
     for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
       const response = await generateContent({
         contents,
-        systemInstruction: SYSTEM_INSTRUCTION,
+        systemInstruction: systemInstruction(lang),
         tools: TOOL_DECLARATIONS,
       });
 
@@ -81,13 +94,16 @@ export async function runCopilotTurn(
     }
 
     return {
-      text: "I gathered the data but ran out of reasoning steps -- try narrowing your question to one facility or item.",
+      text:
+        lang === "sw"
+          ? "Nimepata data lakini hatua za kufikiri zimeisha -- jaribu kubainisha swali lako kwa kituo au bidhaa moja."
+          : "I gathered the data but ran out of reasoning steps -- try narrowing your question to one facility or item.",
       mocked: false,
       toolsUsed,
     };
   } catch (err) {
     console.error("[gemma] runCopilotTurn failed, falling back to mock:", err);
-    const fallback = await mockTurn(userMessage);
+    const fallback = await mockTurn(userMessage, lang);
     return { ...fallback, mocked: true };
   }
 }

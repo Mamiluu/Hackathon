@@ -229,6 +229,14 @@ const dict = {
   onHandLabel: { en: "on hand", sw: "iliyopo" },
   projectedLabel: { en: "projected", sw: "iliyotabiriwa" },
   todayLabel: { en: "Today", sw: "Leo" },
+
+  suggestion1: { en: "Which facilities are at stockout risk?", sw: "Ni vituo gani viko hatarini kuishiwa na dawa?" },
+  suggestion2: { en: "What's Ganze Dispensary's status right now?", sw: "Hali ya Zahanati ya Ganze ikoje sasa hivi?" },
+  suggestion3: {
+    en: "Get the forecast for Artemether-Lumefantrine at Ganze Dispensary",
+    sw: "Nipe utabiri wa Artemether-Lumefantrine katika Zahanati ya Ganze",
+  },
+  suggestion4: { en: "Summarize the current redistribution proposals", sw: "Fupisha mapendekezo ya sasa ya ugawaji" },
 } as const;
 
 export type TranslationKey = keyof typeof dict;
