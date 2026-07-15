@@ -1,7 +1,11 @@
 import { NavLinks } from "./NavLinks";
 import { ThemeToggle } from "./ThemeToggle";
+import { LanguageToggle } from "./LanguageToggle";
+import { getLang } from "@/lib/i18n/getLang";
+import { t } from "@/lib/i18n/translations";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
+  const lang = getLang();
   return (
     <div className="min-h-screen bg-page">
       <div className="mx-auto flex max-w-[1440px]">
@@ -19,18 +23,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </svg>
             </div>
             <div>
-              <div className="text-sm font-semibold leading-tight text-ink-primary">AfyaPulse</div>
-              <div className="text-[11px] leading-tight text-ink-muted">Kilifi County · District Health</div>
+              <div className="text-sm font-semibold leading-tight text-ink-primary">{t("appName", lang)}</div>
+              <div className="text-[11px] leading-tight text-ink-muted">{t("appTagline", lang)}</div>
             </div>
           </div>
-          <NavLinks />
+          <NavLinks lang={lang} />
           <div className="mt-auto space-y-3 px-2">
             <div className="rounded-lg border border-hairline bg-surface-raised p-3 text-xs text-ink-secondary">
-              <div className="mb-1 font-medium text-ink-primary">Built with Gemma 4</div>
-              Multimodal intake, agentic redistribution, and the district copilot are powered by Gemma 4&apos;s
-              native function calling.
+              <div className="mb-1 font-medium text-ink-primary">{t("builtWithGemma", lang)}</div>
+              {t("builtWithGemmaDesc", lang)}
             </div>
-            <ThemeToggle />
+            <div className="flex gap-2">
+              <ThemeToggle />
+              <LanguageToggle />
+            </div>
           </div>
         </aside>
         <main className="min-w-0 flex-1 px-4 py-6 md:px-8 md:py-8">{children}</main>

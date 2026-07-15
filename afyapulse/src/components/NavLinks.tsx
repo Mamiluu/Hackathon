@@ -3,15 +3,16 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { t, type Lang } from "@/lib/i18n/translations";
 
 const LINKS = [
-  { href: "/", label: "Command Center", icon: "◈" },
-  { href: "/redistribution", label: "Redistribution", icon: "⇄" },
-  { href: "/copilot", label: "DHO Copilot", icon: "◎" },
-  { href: "/intake", label: "Field Intake", icon: "◍" },
-];
+  { href: "/", labelKey: "navCommandCenter", icon: "◈" },
+  { href: "/redistribution", labelKey: "navRedistribution", icon: "⇄" },
+  { href: "/copilot", labelKey: "navCopilot", icon: "◎" },
+  { href: "/intake", labelKey: "navIntake", icon: "◍" },
+] as const;
 
-export function NavLinks() {
+export function NavLinks({ lang }: { lang: Lang }) {
   const pathname = usePathname();
   return (
     <nav className="flex flex-col gap-1">
@@ -31,7 +32,7 @@ export function NavLinks() {
             <span aria-hidden className="text-base">
               {link.icon}
             </span>
-            {link.label}
+            {t(link.labelKey, lang)}
           </Link>
         );
       })}
