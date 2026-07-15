@@ -10,7 +10,7 @@
  */
 
 const API_KEY = process.env.GEMINI_API_KEY;
-const MODEL = process.env.GEMMA_MODEL || "gemma-4-27b-it";
+const MODEL = process.env.GEMMA_MODEL || "gemma-4-26b-a4b-it";
 const BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models";
 
 export const isGemmaConfigured = Boolean(API_KEY);
