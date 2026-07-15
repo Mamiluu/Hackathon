@@ -1,0 +1,15 @@
+# Python
+services/forecasting/.venv/
+services/forecasting/__pycache__/
+**/__pycache__/
+*.pyc
+
+# Node (afyapulse/.gitignore covers the rest; these are belt-and-suspenders)
+node_modules/
+.next/
+.data/
+.env*.local
+
+# OS
+.DS_Store
+Thumbs.db
