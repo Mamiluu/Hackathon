@@ -1,5 +1,6 @@
 import { STOCK_ITEMS, TODAY, getDoctorHistory, getFacility, getFootfallHistory, getLatestStock, getTestAvailabilityToday, getBedsHistory, FACILITIES } from "./store";
 import type { Alert, AlertSeverity, FacilitySnapshot } from "./types";
+import { t, type Lang } from "@/lib/i18n/translations";
 
 const ESSENTIAL_CATEGORIES = new Set(["antimalarial", "antibiotic", "maternal"]);
 
@@ -15,7 +16,7 @@ function stockRiskLevel(days: number): "ok" | "low" | "critical" {
   return "ok";
 }
 
-export function computeFacilitySnapshot(facilityId: string): FacilitySnapshot {
+export function computeFacilitySnapshot(facilityId: string, lang: Lang = "en"): FacilitySnapshot {
   const facility = getFacility(facilityId)!;
   const essentialItems = STOCK_ITEMS.filter((i) => ESSENTIAL_CATEGORIES.has(i.category));
 
@@ -49,12 +50,16 @@ export function computeFacilitySnapshot(facilityId: string): FacilitySnapshot {
   const alerts: Alert[] = [];
   if (stockRisk !== "ok") {
     const worstItem = essentialItems.find((i) => i.id === worstItemId);
+    const message =
+      minDays === Infinity
+        ? t("alertStockoutUnknown", lang, { item: worstItem?.name ?? "Essential stock", facility: facility.name })
+        : t("alertStockoutDays", lang, { item: worstItem?.name ?? "Essential stock", facility: facility.name, days: minDays.toFixed(1) });
     alerts.push({
       id: `alert-${facilityId}-stockout-${worstItemId}`,
       facilityId,
       type: "stockout_risk",
       severity: stockRisk === "critical" ? "critical" : "warning",
-      message: `${worstItem?.name ?? "Essential stock"} at ${facility.name}: ${minDays === Infinity ? "no consumption data" : `${minDays.toFixed(1)} days remaining`}`,
+      message,
       createdAt: new Date().toISOString(),
     });
   }
@@ -64,7 +69,7 @@ export function computeFacilitySnapshot(facilityId: string): FacilitySnapshot {
       facilityId,
       type: "bed_pressure",
       severity: bedOccupancyPct > 100 ? "critical" : "warning",
-      message: `${facility.name} beds at ${Math.round(bedOccupancyPct)}% occupancy`,
+      message: t("alertBedPressure", lang, { facility: facility.name, pct: Math.round(bedOccupancyPct) }),
       createdAt: new Date().toISOString(),
     });
   }
@@ -74,7 +79,11 @@ export function computeFacilitySnapshot(facilityId: string): FacilitySnapshot {
       facilityId,
       type: "doctor_absence",
       severity: doctorAttendancePct < 50 ? "critical" : "warning",
-      message: `${facility.name}: only ${doctorToday?.presentStaff ?? 0}/${doctorToday?.scheduledStaff ?? 0} scheduled staff present today`,
+      message: t("alertDoctorAbsence", lang, {
+        facility: facility.name,
+        present: doctorToday?.presentStaff ?? 0,
+        scheduled: doctorToday?.scheduledStaff ?? 0,
+      }),
       createdAt: new Date().toISOString(),
     });
   }
@@ -84,7 +93,7 @@ export function computeFacilitySnapshot(facilityId: string): FacilitySnapshot {
       facilityId,
       type: "test_unavailable",
       severity: "info",
-      message: `${facility.name}: ${testKitsMissing} test kit type(s) unavailable today`,
+      message: t("alertTestUnavailable", lang, { facility: facility.name, count: testKitsMissing }),
       createdAt: new Date().toISOString(),
     });
   }
@@ -104,13 +113,13 @@ export function computeFacilitySnapshot(facilityId: string): FacilitySnapshot {
   };
 }
 
-export function getAllSnapshots(): FacilitySnapshot[] {
-  return FACILITIES.map((f) => computeFacilitySnapshot(f.id));
+export function getAllSnapshots(lang: Lang = "en"): FacilitySnapshot[] {
+  return FACILITIES.map((f) => computeFacilitySnapshot(f.id, lang));
 }
 
-export function getAllAlerts(): Alert[] {
+export function getAllAlerts(lang: Lang = "en"): Alert[] {
   const severityOrder: Record<AlertSeverity, number> = { critical: 0, warning: 1, info: 2 };
-  return getAllSnapshots()
+  return getAllSnapshots(lang)
     .flatMap((s) => s.alerts)
     .sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]);
 }
