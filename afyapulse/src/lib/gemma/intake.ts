@@ -1,4 +1,5 @@
 import { generateFromMedia } from "./client";
+import { LANGUAGE_NAME, type Lang } from "@/lib/i18n/translations";
 
 export interface ExtractedItem {
   name: string;
@@ -13,20 +14,25 @@ export interface IntakeExtraction {
   confidence: "high" | "medium" | "low";
 }
 
-const IMAGE_PROMPT = `You are reading a photo taken by a community health worker at a rural Kenyan health facility -- \
+function imagePrompt(lang: Lang) {
+  return `You are reading a photo taken by a community health worker at a rural Kenyan health facility -- \
 it could be a stock shelf, a paper stock register page, or a handwritten count. \
 Extract every medicine/item name and its visible quantity. \
 Respond with ONLY minified JSON matching this exact shape, no markdown fences, no commentary: \
 {"type":"stock_count","items":[{"name":string,"quantity":number,"unit":string}],"note":string,"confidence":"high"|"medium"|"low"} \
+Write the "note" field entirely in ${LANGUAGE_NAME[lang]}. \
 If the image is unclear or not stock-related, set type to "unknown" and explain briefly in "note".`;
+}
 
-const AUDIO_PROMPT = `You are transcribing and structuring a voice note from a community health worker or nurse at a \
+function audioPrompt(lang: Lang) {
+  return `You are transcribing and structuring a voice note from a community health worker or nurse at a \
 rural Kenyan health facility, possibly in English, Swahili, or a mix of both. They may be reporting stock counts, \
 bed status, doctor attendance, or a general facility note. \
 Respond with ONLY minified JSON matching this exact shape, no markdown fences, no commentary: \
 {"type":"stock_count"|"facility_note","items":[{"name":string,"quantity":number,"unit":string}],"note":string,"confidence":"high"|"medium"|"low"} \
-"items" may be empty if the note isn't about stock counts -- put the substance of the note in "note" either way \
-(translated to English if needed).`;
+"items" may be empty if the note isn't about stock counts -- put the substance of the note in "note" either way, \
+written entirely in ${LANGUAGE_NAME[lang]} regardless of which language was spoken.`;
+}
 
 function parseExtraction(rawText: string): IntakeExtraction {
   const cleaned = rawText.replace(/```json|```/g, "").trim();
@@ -49,7 +55,19 @@ function parseExtraction(rawText: string): IntakeExtraction {
   }
 }
 
-function mockImageExtraction(): IntakeExtraction {
+function mockImageExtraction(lang: Lang): IntakeExtraction {
+  if (lang === "sw") {
+    return {
+      type: "stock_count",
+      items: [
+        { name: "Artemether-Lumefantrine 20/120mg", quantity: 42, unit: "vidonge" },
+        { name: "Amoxicillin 250mg", quantity: 15, unit: "vidonge" },
+        { name: "Malaria RDT Kit", quantity: 6, unit: "vifaa" },
+      ],
+      note: "Rasimu ya Nje ya Mtandao — unganisha GEMINI_API_KEY kwa uwezo halisi wa kuona wa Gemma 4. Mfano wa data umeonyeshwa.",
+      confidence: "medium",
+    };
+  }
   return {
     type: "stock_count",
     items: [
@@ -62,7 +80,16 @@ function mockImageExtraction(): IntakeExtraction {
   };
 }
 
-function mockAudioExtraction(): IntakeExtraction {
+function mockAudioExtraction(lang: Lang): IntakeExtraction {
+  if (lang === "sw") {
+    return {
+      type: "facility_note",
+      items: [{ name: "Oxytocin Injection", quantity: 3, unit: "ampoule" }],
+      note:
+        "Rasimu ya Nje ya Mtandao — unganisha GEMINI_API_KEY kwa unukuzi halisi wa sauti wa Gemma 4. Mfano: \"Kitanda cha 2 na 3 vimejaa, daktari hakuja leo, na tumebakiwa na ampoule 3 za oxytocin.\"",
+      confidence: "medium",
+    };
+  }
   return {
     type: "facility_note",
     items: [{ name: "Oxytocin Injection", quantity: 3, unit: "ampoules" }],
@@ -72,22 +99,30 @@ function mockAudioExtraction(): IntakeExtraction {
   };
 }
 
-export async function extractFromImage(imageBase64: string, mimeType: string): Promise<{ extraction: IntakeExtraction; mocked: boolean; raw: string }> {
+export async function extractFromImage(
+  imageBase64: string,
+  mimeType: string,
+  lang: Lang = "en"
+): Promise<{ extraction: IntakeExtraction; mocked: boolean; raw: string }> {
   const result = await generateFromMedia({
-    prompt: IMAGE_PROMPT,
+    prompt: imagePrompt(lang),
     mediaBase64: imageBase64,
     mimeType,
-    mockFallback: () => ({ text: JSON.stringify(mockImageExtraction()), functionCalls: [], mocked: true }),
+    mockFallback: () => ({ text: JSON.stringify(mockImageExtraction(lang)), functionCalls: [], mocked: true }),
   });
   return { extraction: parseExtraction(result.text), mocked: result.mocked, raw: result.text };
 }
 
-export async function extractFromAudio(audioBase64: string, mimeType: string): Promise<{ extraction: IntakeExtraction; mocked: boolean; raw: string }> {
+export async function extractFromAudio(
+  audioBase64: string,
+  mimeType: string,
+  lang: Lang = "en"
+): Promise<{ extraction: IntakeExtraction; mocked: boolean; raw: string }> {
   const result = await generateFromMedia({
-    prompt: AUDIO_PROMPT,
+    prompt: audioPrompt(lang),
     mediaBase64: audioBase64,
     mimeType,
-    mockFallback: () => ({ text: JSON.stringify(mockAudioExtraction()), functionCalls: [], mocked: true }),
+    mockFallback: () => ({ text: JSON.stringify(mockAudioExtraction(lang)), functionCalls: [], mocked: true }),
   });
   return { extraction: parseExtraction(result.text), mocked: result.mocked, raw: result.text };
 }
