@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import type { RedistributionProposal } from "@/lib/data/types";
 import { StatusPill, type Severity } from "./StatusPill";
 import { cn } from "@/lib/utils";
+import { t, type Lang } from "@/lib/i18n/translations";
 
 export function RedistributionCard({
   proposal,
@@ -11,12 +12,14 @@ export function RedistributionCard({
   itemUnit,
   sourceFacilityName,
   destFacilityName,
+  lang = "en",
 }: {
   proposal: RedistributionProposal;
   itemName: string;
   itemUnit: string;
   sourceFacilityName: string;
   destFacilityName: string;
+  lang?: Lang;
 }) {
   const [status, setStatus] = useState(proposal.status);
   const [brief, setBrief] = useState(proposal.brief);
@@ -40,7 +43,7 @@ export function RedistributionCard({
       const res = await fetch("/api/redistribution/brief", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: proposal.id }),
+        body: JSON.stringify({ id: proposal.id, lang }),
       });
       const json = await res.json();
       setBrief(json.brief);
@@ -48,6 +51,9 @@ export function RedistributionCard({
       setBriefLoading(false);
     }
   }
+
+  const statusLabel =
+    status === "dispatched" ? t("statusDispatched", lang) : status === "approved" ? t("statusApproved", lang) : t("statusProposed", lang);
 
   return (
     <div className="rounded-xl border border-hairline bg-surface p-4">
@@ -60,25 +66,25 @@ export function RedistributionCard({
             <span className="font-medium text-ink-primary">{destFacilityName}</span>
           </div>
         </div>
-        <StatusPill severity={proposal.urgency as Severity} />
+        <StatusPill severity={proposal.urgency as Severity} lang={lang} />
       </div>
 
       <div className="mt-3 grid grid-cols-3 gap-3 text-xs">
         <div>
-          <div className="text-ink-muted">Quantity</div>
+          <div className="text-ink-muted">{t("quantity", lang)}</div>
           <div className="mt-0.5 font-medium tabular text-ink-primary">
             {proposal.quantity} {itemUnit}
           </div>
         </div>
         <div>
-          <div className="text-ink-muted">Est. transit</div>
-          <div className="mt-0.5 font-medium tabular text-ink-primary">{proposal.estTransitMinutes} min</div>
+          <div className="text-ink-muted">{t("estTransit", lang)}</div>
+          <div className="mt-0.5 font-medium tabular text-ink-primary">
+            {proposal.estTransitMinutes} {t("minutes", lang)}
+          </div>
         </div>
         <div>
-          <div className="text-ink-muted">Status</div>
-          <div className="mt-0.5 font-medium text-ink-primary">
-            {status === "dispatched" ? "Dispatched" : status === "approved" ? "Approved" : "Proposed"}
-          </div>
+          <div className="text-ink-muted">{t("statusLabel", lang)}</div>
+          <div className="mt-0.5 font-medium text-ink-primary">{statusLabel}</div>
         </div>
       </div>
 
@@ -87,7 +93,7 @@ export function RedistributionCard({
       {brief && (
         <div className="mt-3 rounded-lg border border-series-1/20 bg-series-1/5 p-3 text-xs text-ink-primary">
           <div className="mb-1 flex items-center gap-1.5 font-medium text-series-1">
-            <span aria-hidden>◎</span> Gemma dispatch brief
+            <span aria-hidden>◎</span> {t("gemmaBrief", lang)}
           </div>
           {brief}
         </div>
@@ -104,14 +110,14 @@ export function RedistributionCard({
               : "bg-series-1 text-white hover:bg-series-1/90 disabled:opacity-60"
           )}
         >
-          {status === "dispatched" ? "✓ Dispatched" : isPending ? "Dispatching…" : "Approve & Dispatch"}
+          {status === "dispatched" ? t("dispatchedCheck", lang) : isPending ? t("dispatching", lang) : t("approveDispatch", lang)}
         </button>
         <button
           onClick={generateBrief}
           disabled={briefLoading}
           className="rounded-md border border-hairline px-3 py-1.5 text-xs font-medium text-ink-secondary hover:text-ink-primary disabled:opacity-60"
         >
-          {briefLoading ? "Writing brief…" : brief ? "Regenerate brief" : "Generate AI brief"}
+          {briefLoading ? t("writingBrief", lang) : brief ? t("regenerateBrief", lang) : t("generateBrief", lang)}
         </button>
       </div>
     </div>

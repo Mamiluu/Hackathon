@@ -204,6 +204,31 @@ const dict = {
     en: "{dest} has {days} days of {item} remaining. {source} holds surplus {unit} above its own 10-day safety buffer, {distance}km away (~{minutes} min by road).",
     sw: "{dest} ina siku {days} za {item} zilizobaki. {source} ina ziada ya {unit} zaidi ya akiba yake ya dharura ya siku 10, umbali wa kilomita {distance} (~dakika {minutes} kwa barabara).",
   },
+
+  riskOk: { en: "Ok", sw: "Sawa" },
+
+  // Facility detail extras
+  facilityBedsScheduled: {
+    en: "{beds} beds · {staff} scheduled staff · as of {date}",
+    sw: "vitanda {beds} · wafanyakazi {staff} waliopangwa · kufikia {date}",
+  },
+
+  // Stock forecast chart
+  loadingForecast: { en: "Loading forecast…", sw: "Inapakia Utabiri…" },
+  daysToStockoutLabel: { en: "{days} days to stockout", sw: "siku {days} hadi kuishiwa" },
+  noStockoutProjected: { en: "No stockout projected in 21 days", sw: "Hakuna ukosefu unaotabiriwa ndani ya siku 21" },
+  solidRecorded: {
+    en: "Solid = recorded stock on hand. Lighter continuation = AI-projected trajectory.",
+    sw: "Mstari mzito = akiba iliyorekodiwa. Mstari hafifu = mwelekeo uliotabiriwa na AI.",
+  },
+  stockTrajectory: { en: "{item} — stock trajectory", sw: "{item} — mwelekeo wa akiba" },
+  forecastMethodLabel: {
+    en: "Forecast method: Holt's linear trend exponential smoothing · {confidence} confidence",
+    sw: "Mbinu ya utabiri: Holt's linear trend exponential smoothing · uhakika wa {confidence}",
+  },
+  onHandLabel: { en: "on hand", sw: "iliyopo" },
+  projectedLabel: { en: "projected", sw: "iliyotabiriwa" },
+  todayLabel: { en: "Today", sw: "Leo" },
 } as const;
 
 export type TranslationKey = keyof typeof dict;

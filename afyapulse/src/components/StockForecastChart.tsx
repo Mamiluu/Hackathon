@@ -14,6 +14,7 @@ import {
 import type { StockItem } from "@/lib/data/types";
 import { cn, formatCompact } from "@/lib/utils";
 import { StatusPill } from "./StatusPill";
+import { t, type Lang } from "@/lib/i18n/translations";
 
 interface ChartRow {
   date: string;
@@ -29,12 +30,28 @@ interface ApiResponse {
   confidence: "low" | "medium" | "high";
 }
 
+const CONFIDENCE_KEY = {
+  low: "confidenceLow",
+  medium: "confidenceMedium",
+  high: "confidenceHigh",
+} as const;
+
 function formatDateShort(iso: string) {
   const d = new Date(iso);
   return d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
 }
 
-function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: { value: number; dataKey: string }[]; label?: string }) {
+function CustomTooltip({
+  active,
+  payload,
+  label,
+  lang,
+}: {
+  active?: boolean;
+  payload?: { value: number; dataKey: string }[];
+  label?: string;
+  lang: Lang;
+}) {
   if (!active || !payload || payload.length === 0) return null;
   const actual = payload.find((p) => p.dataKey === "actual")?.value;
   const projected = payload.find((p) => p.dataKey === "projected")?.value;
@@ -47,13 +64,23 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
       <div className="flex items-center gap-1.5">
         <span className="inline-block h-0.5 w-3 bg-series-1" aria-hidden />
         <span className="font-semibold tabular text-ink-primary">{formatCompact(value)}</span>
-        <span className="text-ink-secondary">{actual !== undefined ? "on hand" : "projected"}</span>
+        <span className="text-ink-secondary">{actual !== undefined ? t("onHandLabel", lang) : t("projectedLabel", lang)}</span>
       </div>
     </div>
   );
 }
 
-export function StockForecastChart({ facilityId, items, defaultItemId }: { facilityId: string; items: StockItem[]; defaultItemId: string }) {
+export function StockForecastChart({
+  facilityId,
+  items,
+  defaultItemId,
+  lang = "en",
+}: {
+  facilityId: string;
+  items: StockItem[];
+  defaultItemId: string;
+  lang?: Lang;
+}) {
   const [itemId, setItemId] = useState(defaultItemId);
   const [data, setData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -123,24 +150,22 @@ export function StockForecastChart({ facilityId, items, defaultItemId }: { facil
 
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <div className="text-sm font-semibold text-ink-primary">{activeItem?.name} — stock trajectory</div>
-          <div className="text-xs text-ink-muted">
-            Solid = recorded stock on hand. Lighter continuation = AI-projected trajectory.
-          </div>
+          <div className="text-sm font-semibold text-ink-primary">{t("stockTrajectory", lang, { item: activeItem?.name ?? "" })}</div>
+          <div className="text-xs text-ink-muted">{t("solidRecorded", lang)}</div>
         </div>
         {data && (
           <div className="flex items-center gap-2">
             {data.daysToStockout !== null ? (
-              <StatusPill severity={stockoutSeverity} text={`${data.daysToStockout} days to stockout`} />
+              <StatusPill severity={stockoutSeverity} text={t("daysToStockoutLabel", lang, { days: data.daysToStockout })} />
             ) : (
-              <StatusPill severity="good" text="No stockout projected in 21 days" />
+              <StatusPill severity="good" text={t("noStockoutProjected", lang)} />
             )}
           </div>
         )}
       </div>
 
       {loading ? (
-        <div className="flex h-64 items-center justify-center text-sm text-ink-muted">Loading forecast…</div>
+        <div className="flex h-64 items-center justify-center text-sm text-ink-muted">{t("loadingForecast", lang)}</div>
       ) : (
         <div className="h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
@@ -166,10 +191,10 @@ export function StockForecastChart({ facilityId, items, defaultItemId }: { facil
                   x={todayDate}
                   stroke="var(--baseline)"
                   strokeWidth={1}
-                  label={{ value: "Today", position: "insideTopRight", fill: "var(--text-muted)", fontSize: 11 }}
+                  label={{ value: t("todayLabel", lang), position: "insideTopRight", fill: "var(--text-muted)", fontSize: 11 }}
                 />
               )}
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip content={<CustomTooltip lang={lang} />} />
               <Line
                 type="monotone"
                 dataKey="actual"
@@ -198,7 +223,7 @@ export function StockForecastChart({ facilityId, items, defaultItemId }: { facil
 
       {data && (
         <div className="mt-2 text-xs text-ink-muted">
-          Forecast method: Holt&apos;s linear trend exponential smoothing · {data.confidence} confidence
+          {t("forecastMethodLabel", lang, { confidence: t(CONFIDENCE_KEY[data.confidence], lang) })}
         </div>
       )}
     </div>
