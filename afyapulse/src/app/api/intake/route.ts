@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { extractFromAudio, extractFromImage } from "@/lib/gemma/intake";
-import type { Lang } from "@/lib/i18n/translations";
+import { parseLang } from "@/lib/i18n/translations";
 
 export async function POST(req: NextRequest) {
   const body = (await req.json()) as { mediaBase64?: string; mimeType?: string; kind?: "image" | "audio"; lang?: string };
   const { mediaBase64, mimeType, kind } = body;
-  const lang: Lang = body.lang === "sw" ? "sw" : "en";
+  const lang = parseLang(body.lang);
 
   if (!mediaBase64 || !mimeType || !kind) {
     return NextResponse.json({ error: "mediaBase64, mimeType, and kind are required" }, { status: 400 });

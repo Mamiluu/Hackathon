@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { computeAllProposals } from "@/lib/redistribution";
 import { getRedistributionOverride, setRedistributionOverride } from "@/lib/data/store";
 import { chatComplete } from "@/lib/gemma/client";
-import { LANGUAGE_NAME, type Lang } from "@/lib/i18n/translations";
+import { LANGUAGE_NAME, parseLang } from "@/lib/i18n/translations";
 
 export async function POST(req: NextRequest) {
   const { id, lang: rawLang } = (await req.json()) as { id?: string; lang?: string };
   if (!id) return NextResponse.json({ error: "id is required" }, { status: 400 });
-  const lang: Lang = rawLang === "sw" ? "sw" : "en";
+  const lang = parseLang(rawLang);
 
   const { proposals } = await computeAllProposals(lang);
   const proposal = proposals.find((p) => p.id === id);

@@ -1,9 +1,63 @@
-export type Lang = "en" | "sw";
+export type Lang =
+  | "en"
+  | "sw"
+  | "fr"
+  | "es"
+  | "de"
+  | "ar"
+  | "zh"
+  | "hi"
+  | "pt"
+  | "ru"
+  | "ur"
+  | "id"
+  | "ja"
+  | "ko";
 
-export const LANGUAGE_LABEL: Record<Lang, string> = { en: "English", sw: "Kiswahili" };
+export const ALL_LANGS: Lang[] = ["en", "sw", "fr", "es", "de", "ar", "zh", "hi", "pt", "ru", "ur", "id", "ja", "ko"];
 
-/** Full name used inside Gemma system instructions so generated content matches the UI language. */
-export const LANGUAGE_NAME: Record<Lang, string> = { en: "English", sw: "Swahili" };
+/** Statically translated (hand-verified) — always available with zero latency and no Gemma call. */
+const STATIC_LANGS: Lang[] = ["en", "sw"];
+
+/** Native self-name, used in the language picker. */
+export const LANGUAGE_LABEL: Record<Lang, string> = {
+  en: "English",
+  sw: "Kiswahili",
+  fr: "Français",
+  es: "Español",
+  de: "Deutsch",
+  ar: "العربية",
+  zh: "中文",
+  hi: "हिन्दी",
+  pt: "Português",
+  ru: "Русский",
+  ur: "اردو",
+  id: "Bahasa Indonesia",
+  ja: "日本語",
+  ko: "한국어",
+};
+
+/** Full English name used inside Gemma system instructions so generated content matches the UI language. */
+export const LANGUAGE_NAME: Record<Lang, string> = {
+  en: "English",
+  sw: "Swahili",
+  fr: "French",
+  es: "Spanish",
+  de: "German",
+  ar: "Arabic",
+  zh: "Chinese",
+  hi: "Hindi",
+  pt: "Portuguese",
+  ru: "Russian",
+  ur: "Urdu",
+  id: "Indonesian",
+  ja: "Japanese",
+  ko: "Korean",
+};
+
+export function parseLang(value: string | undefined | null): Lang {
+  return value && (ALL_LANGS as string[]).includes(value) ? (value as Lang) : "en";
+}
 
 const dict = {
   // Sidebar / nav
@@ -152,8 +206,8 @@ const dict = {
   reading: { en: "Reading…", sw: "Inasoma…" },
   voiceIntake: { en: "Voice note intake", sw: "Uwekaji kwa Sauti" },
   voiceIntakeDesc: {
-    en: "Record a spoken report in English or Swahili — Gemma 4 transcribes and structures it, no typing required in the field.",
-    sw: "Rekodi ripoti ya sauti kwa Kiingereza au Kiswahili — Gemma 4 inaandika na kupanga data, hakuna uandishi unaohitajika ushaani.",
+    en: "Record a spoken report in your language — Gemma 4 transcribes and structures it into any of {count} supported languages, no typing required in the field.",
+    sw: "Rekodi ripoti ya sauti kwa lugha yako — Gemma 4 inaandika na kupanga data katika lugha yoyote kati ya {count} zinazotumika, hakuna uandishi unaohitajika ushaani.",
   },
   startRecording: { en: "Start recording", sw: "Anza Kurekodi" },
   recordAgain: { en: "Record again", sw: "Rekodi Tena" },
@@ -241,8 +295,34 @@ const dict = {
 
 export type TranslationKey = keyof typeof dict;
 
+/** English source strings, keyed the same as `dict` — what gets sent to Gemma for auto-translation. */
+export const ENGLISH_SOURCE: Record<TranslationKey, string> = Object.fromEntries(
+  (Object.keys(dict) as TranslationKey[]).map((k) => [k, dict[k].en])
+) as Record<TranslationKey, string>;
+
+/**
+ * In-memory cache for Gemma-auto-translated languages (everything beyond the hand-verified
+ * `en`/`sw` pairs above). Populated by `ensureAutoTranslated()` in autoTranslate.server.ts on the
+ * server, and mirrored into the browser's copy of this module by <AutoTranslationSync> on hydration
+ * so client components hitting `t()` after a re-render (not just the initial SSR pass) still see it.
+ */
+const autoCache: Partial<Record<Lang, Partial<Record<TranslationKey, string>>>> = {};
+
+export function setAutoTranslation(lang: Lang, map: Partial<Record<TranslationKey, string>>): void {
+  autoCache[lang] = { ...autoCache[lang], ...map };
+}
+
+export function hasAutoTranslation(lang: Lang): boolean {
+  return Boolean(autoCache[lang]);
+}
+
 export function t(key: TranslationKey, lang: Lang, vars?: Record<string, string | number>): string {
-  let str: string = dict[key]?.[lang] ?? dict[key]?.en ?? key;
+  let str: string;
+  if (STATIC_LANGS.includes(lang)) {
+    str = dict[key]?.[lang as "en" | "sw"] ?? dict[key]?.en ?? key;
+  } else {
+    str = autoCache[lang]?.[key] ?? dict[key]?.en ?? key;
+  }
   if (vars) {
     for (const [k, v] of Object.entries(vars)) {
       str = str.replace(`{${k}}`, String(v));

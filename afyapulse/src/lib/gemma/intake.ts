@@ -26,7 +26,7 @@ If the image is unclear or not stock-related, set type to "unknown" and explain 
 
 function audioPrompt(lang: Lang) {
   return `You are transcribing and structuring a voice note from a community health worker or nurse at a \
-rural Kenyan health facility, possibly in English, Swahili, or a mix of both. They may be reporting stock counts, \
+rural Kenyan health facility, in whichever language they speak. They may be reporting stock counts, \
 bed status, doctor attendance, or a general facility note. \
 Respond with ONLY minified JSON matching this exact shape, no markdown fences, no commentary: \
 {"type":"stock_count"|"facility_note","items":[{"name":string,"quantity":number,"unit":string}],"note":string,"confidence":"high"|"medium"|"low"} \
