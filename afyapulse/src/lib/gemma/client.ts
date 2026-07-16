@@ -89,7 +89,7 @@ export async function generateContent(opts: {
   return { text, functionCalls, mocked: false };
 }
 
-/** Convenience wrapper for a simple single-turn text generation (no tools). */
+/* Convenience wrapper for a simple single-turn text generation (no tools). */
 export async function chatComplete(opts: {
   systemInstruction: string;
   messages: { role: "user" | "model"; text: string }[];
