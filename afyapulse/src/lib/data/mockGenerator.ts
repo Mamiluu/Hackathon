@@ -8,7 +8,7 @@ import type {
   TestAvailabilityRecord,
 } from "./types";
 
-// Deterministic PRNG (mulberry32) so the demo dataset is stable across restarts.
+// Deterministic PRNG so the demo dataset is stable across restarts.
 function mulberry32(seed: number) {
   let a = seed;
   return function rand() {
