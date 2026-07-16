@@ -177,7 +177,7 @@ export function generateMockData(): GeneratedData {
       });
     }
 
-    // ---- Test availability ----
+    // Test availability
     for (const date of DATES) {
       for (const item of STOCK_ITEMS.filter((i) => i.category === "test_kit")) {
         const shortageChance = facility.type === "dispensary" ? 0.18 : 0.06;
