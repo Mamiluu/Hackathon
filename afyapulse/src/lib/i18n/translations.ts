@@ -223,8 +223,8 @@ const dict = {
   },
   stockTrajectory: { en: "{item} — stock trajectory", sw: "{item} — mwelekeo wa akiba" },
   forecastMethodLabel: {
-    en: "Forecast method: Holt's linear trend exponential smoothing · {confidence} confidence",
-    sw: "Mbinu ya utabiri: Holt's linear trend exponential smoothing · uhakika wa {confidence}",
+    en: "Forecast method: Holt's linear trend exponential smoothing · {confidence}",
+    sw: "Mbinu ya utabiri: Holt's linear trend exponential smoothing · {confidence}",
   },
   onHandLabel: { en: "on hand", sw: "iliyopo" },
   projectedLabel: { en: "projected", sw: "iliyotabiriwa" },
