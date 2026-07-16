@@ -69,7 +69,11 @@ Three tiers, one metaphor:
 - **Gemma 4 dispatch briefs** — one click on a redistribution proposal turns the raw numbers into a
   human-readable authorization brief.
 - **Gemma 4 multimodal field intake** (`/intake`) — photo of a stock shelf/register or a voice note in
-  English/Swahili, structured into JSON by Gemma 4 vision/audio.
+  whichever language a CHV/nurse speaks, structured into JSON by Gemma 4 vision/audio.
+- **14-language UI** — English and Swahili are hand-translated; the other 12 (French, Spanish, German,
+  Arabic, Chinese, Hindi, Portuguese, Russian, Urdu, Indonesian, Japanese, Korean) are translated by Gemma 4
+  itself (`src/lib/i18n/autoTranslate.server.ts`), not hand-written, then cached as static assets
+  (`src/lib/i18n/generated/`) so production never depends on a live translation call.
 - Every Gemma-backed feature has a clearly-labeled offline fallback, so the whole app runs end-to-end with
   zero API key, and upgrades to live Gemma the moment one is added.
 
