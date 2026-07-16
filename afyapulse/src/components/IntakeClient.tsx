@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { StatusPill } from "@/components/StatusPill";
 import type { IntakeExtraction } from "@/lib/gemma/intake";
-import { t, type Lang } from "@/lib/i18n/translations";
+import { ALL_LANGS, t, type Lang } from "@/lib/i18n/translations";
 
 function fileToBase64(blob: Blob): Promise<{ base64: string; mimeType: string }> {
   return new Promise((resolve, reject) => {
@@ -198,7 +198,7 @@ function AudioIntake({ lang }: { lang: Lang }) {
   return (
     <div className="rounded-xl border border-hairline bg-surface p-4">
       <div className="mb-1 text-sm font-semibold text-ink-primary">{t("voiceIntake", lang)}</div>
-      <p className="mb-3 text-xs text-ink-secondary">{t("voiceIntakeDesc", lang)}</p>
+      <p className="mb-3 text-xs text-ink-secondary">{t("voiceIntakeDesc", lang, { count: ALL_LANGS.length })}</p>
 
       <div className="mb-3 flex h-40 flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-hairline">
         {recording ? (
