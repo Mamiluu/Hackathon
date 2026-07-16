@@ -91,7 +91,7 @@ export function generateMockData(): GeneratedData {
     const isCrisisFacility = facility.id === "fac-ganze-disp";
     const isSurplusFacility = facility.id === "fac-kilifi-crh";
 
-    // ---- Stock ----
+    // Stock
     for (const item of STOCK_ITEMS) {
       const isMalariaItem = item.category === "antimalarial";
       const baseDailyConsumption = isMalariaItem ? size * 14 : size * 6;
