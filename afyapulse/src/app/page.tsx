@@ -8,11 +8,13 @@ import { DistrictMap, type MapRoute } from "@/components/DistrictMap";
 import { StoryBanner } from "@/components/StoryBanner";
 import { getLang } from "@/lib/i18n/getLang";
 import { t } from "@/lib/i18n/translations";
+import { ensureAutoTranslated } from "@/lib/i18n/autoTranslate.server";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const lang = getLang();
+  await ensureAutoTranslated(lang);
   const snapshots = getAllSnapshots(lang);
   const alerts = getAllAlerts(lang);
   const { proposals } = await computeAllProposals(lang);

@@ -6,9 +6,11 @@ import { StatTile } from "@/components/StatTile";
 import { DistrictMap, type MapRoute } from "@/components/DistrictMap";
 import { getLang } from "@/lib/i18n/getLang";
 import { t } from "@/lib/i18n/translations";
+import { ensureAutoTranslated } from "@/lib/i18n/autoTranslate.server";
 
 export default async function RedistributionPage() {
   const lang = getLang();
+  await ensureAutoTranslated(lang);
   const { proposals, serviceUnavailable } = await computeAllProposals(lang);
   const snapshots = getAllSnapshots(lang);
   const totalUnits = proposals.reduce((sum, p) => sum + p.quantity, 0);

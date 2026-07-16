@@ -1,13 +1,18 @@
 import { NavLinks } from "./NavLinks";
 import { ThemeToggle } from "./ThemeToggle";
 import { LanguageToggle } from "./LanguageToggle";
+import { AutoTranslationSync } from "./AutoTranslationSync";
 import { getLang } from "@/lib/i18n/getLang";
 import { t } from "@/lib/i18n/translations";
+import { ensureAutoTranslated, getCachedTranslation } from "@/lib/i18n/autoTranslate.server";
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export async function AppShell({ children }: { children: React.ReactNode }) {
   const lang = getLang();
+  await ensureAutoTranslated(lang);
+  const autoDict = getCachedTranslation(lang) ?? {};
   return (
     <div className="min-h-screen bg-page">
+      <AutoTranslationSync lang={lang} dict={autoDict} />
       <div className="mx-auto flex max-w-[1440px]">
         <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-hairline bg-surface px-4 py-6 md:flex">
           <div className="mb-8 flex items-center gap-2.5 px-2">

@@ -17,6 +17,7 @@ import { AlertList } from "@/components/AlertList";
 import { StockForecastChart } from "@/components/StockForecastChart";
 import { getLang } from "@/lib/i18n/getLang";
 import { t } from "@/lib/i18n/translations";
+import { ensureAutoTranslated } from "@/lib/i18n/autoTranslate.server";
 
 export const dynamic = "force-dynamic";
 
@@ -34,10 +35,11 @@ function riskSeverity(days: number): Severity {
   return "good";
 }
 
-export default function FacilityDetailPage({ params }: { params: { id: string } }) {
+export default async function FacilityDetailPage({ params }: { params: { id: string } }) {
   const facility = getFacility(params.id);
   if (!facility) notFound();
   const lang = getLang();
+  await ensureAutoTranslated(lang);
 
   const snapshot = computeFacilitySnapshot(facility.id, lang);
   const bedsHistory = getBedsHistory(facility.id).slice(-14);
