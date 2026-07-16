@@ -137,7 +137,7 @@ export function generateMockData(): GeneratedData {
       }
     }
 
-    // ---- Footfall ----
+    // Footfall
     const baseFootfall = size * 28;
     for (const date of DATES) {
       const seasonal = seasonalMalariaFactor(date);
@@ -151,7 +151,7 @@ export function generateMockData(): GeneratedData {
       });
     }
 
-    // ---- Beds ----
+    // Beds
     for (const date of DATES) {
       const occPct = isSurplusFacility ? 0.55 + rand() * 0.15 : 0.4 + rand() * 0.35;
       beds.push({
@@ -161,7 +161,7 @@ export function generateMockData(): GeneratedData {
       });
     }
 
-    // ---- Doctor attendance ----
+    // Doctor attendance
     for (const date of DATES) {
       const dow = new Date(date).getUTCDay();
       const isWeekend = dow === 0 || dow === 6;
