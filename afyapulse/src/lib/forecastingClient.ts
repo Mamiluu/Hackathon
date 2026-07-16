@@ -15,8 +15,6 @@ export interface ForecastResult {
 
 const SERVICE_URL = process.env.FORECASTING_SERVICE_URL ?? "http://localhost:8010";
 
-// Local last-resort fallback (flat-line extrapolation) so the UI never breaks if the
-// Python service isn't running yet — clearly distinguishable via `method`.
 function localFallbackForecast(history: StockRecord[], horizonDays: number): ForecastResult {
   if (history.length === 0) {
     return { forecast: [], daysToStockout: null, method: "unavailable", confidence: "low" };
