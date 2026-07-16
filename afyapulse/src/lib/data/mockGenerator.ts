@@ -20,7 +20,7 @@ function mulberry32(seed: number) {
   };
 }
 
-const rand = mulberry32(20260731); // seeded on the hackathon date, for fun
+const rand = mulberry32(20260731); 
 
 export const FACILITIES: Facility[] = [
   { id: "fac-kilifi-crh", name: "Kilifi County Referral Hospital", type: "district_hospital", ward: "Kilifi Town", lat: -3.6305, lng: 39.8499, totalBeds: 180, scheduledStaff: 42 },
