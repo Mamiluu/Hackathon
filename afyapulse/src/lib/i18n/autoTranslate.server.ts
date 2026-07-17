@@ -33,14 +33,29 @@ function isCompleteTranslation(map: unknown): map is Record<string, string> {
   return Object.keys(ENGLISH_SOURCE).every((k) => typeof m[k] === "string" && (m[k] as string).length > 0);
 }
 
-async function translateViaGemma(lang: Lang): Promise<Record<string, string> | null> {
+const CHUNK_SIZE = 20;
+
+function chunkEntries<T>(entries: [string, T][], size: number): [string, T][][] {
+  const chunks: [string, T][][] = [];
+  for (let i = 0; i < entries.length; i += size) chunks.push(entries.slice(i, i + size));
+  return chunks;
+}
+
+/**
+ * Translating all ~90 keys in one Gemma call works for most languages, but scripts like
+ * Cyrillic take the model noticeably longer to generate (more output tokens per character),
+ * and that pushed a couple of real requests past Node's ~300s fetch headers timeout. Splitting
+ * into smaller chunks keeps every individual call fast regardless of script, at the cost of a
+ * few more (still one-time, cached-forever) requests per language.
+ */
+async function translateChunk(lang: Lang, chunk: Record<string, string>): Promise<Record<string, string> | null> {
   const result = await chatComplete({
     systemInstruction:
       `Translate the values of this JSON object from English into ${LANGUAGE_NAME[lang]}. ` +
       `Keep every key exactly unchanged. Preserve every {placeholder} token (e.g. {count}, {facility}, {item}) ` +
       `verbatim and untranslated, in the same position within the sentence. Respond with ONLY the translated ` +
       `minified JSON object -- no markdown fences, no commentary, no extra or missing keys.`,
-    messages: [{ role: "user", text: JSON.stringify(ENGLISH_SOURCE) }],
+    messages: [{ role: "user", text: JSON.stringify(chunk) }],
     mockFallback: () => ({ text: "", functionCalls: [], mocked: true }),
   });
 
@@ -48,10 +63,26 @@ async function translateViaGemma(lang: Lang): Promise<Record<string, string> | n
   try {
     const cleaned = result.text.replace(/```json|```/g, "").trim();
     const parsed = JSON.parse(cleaned);
-    return isCompleteTranslation(parsed) ? parsed : null;
+    if (!parsed || typeof parsed !== "object") return null;
+    const keys = Object.keys(chunk);
+    const ok = keys.every((k) => typeof (parsed as Record<string, unknown>)[k] === "string");
+    return ok ? (parsed as Record<string, string>) : null;
   } catch {
     return null;
   }
+}
+
+async function translateViaGemma(lang: Lang): Promise<Record<string, string> | null> {
+  const chunks = chunkEntries(Object.entries(ENGLISH_SOURCE), CHUNK_SIZE);
+  const merged: Record<string, string> = {};
+
+  for (const chunk of chunks) {
+    const translated = await translateChunk(lang, Object.fromEntries(chunk));
+    if (!translated) return null;
+    Object.assign(merged, translated);
+  }
+
+  return isCompleteTranslation(merged) ? merged : null;
 }
 
 /**
