@@ -310,6 +310,7 @@ const dict = {
     sw: "Nipe utabiri wa Artemether-Lumefantrine katika Zahanati ya Ganze",
   },
   suggestion4: { en: "Summarize the current redistribution proposals", sw: "Fupisha mapendekezo ya sasa ya ugawaji" },
+  suggestion5: { en: "Any outbreak or cluster signals right now?", sw: "Kuna dalili za mlipuko au kundi sasa hivi?" },
 } as const;
 
 export type TranslationKey = keyof typeof dict;

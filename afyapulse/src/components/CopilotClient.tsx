@@ -11,7 +11,7 @@ interface Message {
   toolsUsed?: string[];
 }
 
-const SUGGESTION_KEYS = ["suggestion1", "suggestion2", "suggestion3", "suggestion4"] as const;
+const SUGGESTION_KEYS = ["suggestion1", "suggestion2", "suggestion3", "suggestion4", "suggestion5"] as const;
 
 export function CopilotClient({ lang }: { lang: Lang }) {
   const [messages, setMessages] = useState<Message[]>([{ role: "model", text: t("copilotWelcome", lang) }]);
