@@ -57,7 +57,23 @@ export type AlertSeverity = "critical" | "warning" | "info";
 export interface Alert {
   id: string;
   facilityId: string;
-  type: "stockout_risk" | "bed_pressure" | "doctor_absence" | "test_unavailable" | "redistribution";
+  type: "stockout_risk" | "bed_pressure" | "doctor_absence" | "test_unavailable" | "redistribution" | "outbreak_signal";
+  severity: AlertSeverity;
+  message: string;
+  createdAt: string;
+}
+
+/**
+ * A cluster-level signal: multiple nearby facilities showing abnormal week-over-week
+ * consumption growth on the same item at the same time. Distinct from a single facility's
+ * stockout_risk alert -- one facility spiking is normal variance, two or more spiking
+ * together is the early shape of an outbreak, not just a supply problem.
+ */
+export interface OutbreakSignal {
+  id: string;
+  itemId: string;
+  facilityIds: string[];
+  weekOverWeekGrowthPct: number;
   severity: AlertSeverity;
   message: string;
   createdAt: string;

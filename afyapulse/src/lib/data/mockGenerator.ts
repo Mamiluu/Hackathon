@@ -90,6 +90,11 @@ export function generateMockData(): GeneratedData {
     const size = baseFacilitySize(facility);
     const isCrisisFacility = facility.id === "fac-ganze-disp";
     const isSurplusFacility = facility.id === "fac-kilifi-crh";
+    // Bamba is Ganze's nearest neighbor (~10km). A smaller, more recent consumption
+    // uptick here -- distinct from Ganze's resupply-lockout crisis -- is the second data
+    // point the outbreak-signal detector needs to tell "one facility's supply problem"
+    // apart from "a cluster of facilities burning through antimalarials faster than usual."
+    const isEmergingClusterFacility = facility.id === "fac-bamba-disp";
 
     // Stock
     for (const item of STOCK_ITEMS) {
@@ -105,6 +110,9 @@ export function generateMockData(): GeneratedData {
           : startingStock;
 
       for (const date of DATES) {
+        const dateIdx = DATES.indexOf(date);
+        const daysFromEnd = DATES.length - 1 - dateIdx;
+
         const seasonal = isMalariaItem ? seasonalMalariaFactor(date) : 1;
         const noise = 0.8 + rand() * 0.4;
         let consumption = baseDailyConsumption * seasonal * noise;
@@ -113,14 +121,19 @@ export function generateMockData(): GeneratedData {
           // Ganze: consumption climbing, restocks stopped coming ~3 weeks ago.
           consumption *= 1.6;
         }
+        if (isEmergingClusterFacility && isMalariaItem && daysFromEnd <= 10) {
+          // Bamba: a milder, more recent acceleration -- still resupplied normally, so it
+          // never becomes its own stockout crisis, but the week-over-week consumption growth
+          // is real and shows up next to Ganze's, which is exactly the cluster signal.
+          consumption *= 1.3;
+        }
 
         qty = Math.max(0, qty - consumption);
 
         // Periodic resupply, EXCEPT the crisis facility for this item in the final 3 weeks
         // (that's the whole point of the redistribution story). The surplus facility still
         // gets resupplied, but oversized — a delayed KEMSA drop that overshot demand.
-        const daysFromEnd = DATES.length - 1 - DATES.indexOf(date);
-        const resupplyDue = DATES.indexOf(date) % 10 === 0 && DATES.indexOf(date) !== 0;
+        const resupplyDue = dateIdx % 10 === 0 && dateIdx !== 0;
         const crisisLockout = isCrisisFacility && isMalariaItem && daysFromEnd <= 21;
         if (resupplyDue && !crisisLockout) {
           const resupplyMultiplier = isSurplusFacility && isMalariaItem ? 2.6 : 1;
