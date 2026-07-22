@@ -10,6 +10,7 @@ const LINKS = [
   { href: "/redistribution", labelKey: "navRedistribution", icon: "⇄" },
   { href: "/copilot", labelKey: "navCopilot", icon: "◎" },
   { href: "/intake", labelKey: "navIntake", icon: "◍" },
+  { href: "/compliance", labelKey: "navCompliance", icon: "✓" },
 ] as const;
 
 export function NavLinks({ lang }: { lang: Lang }) {

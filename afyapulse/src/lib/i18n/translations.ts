@@ -67,6 +67,7 @@ const dict = {
   navRedistribution: { en: "Redistribution", sw: "Ugawaji Upya" },
   navCopilot: { en: "DHO Copilot", sw: "Msaidizi wa Afisa Afya" },
   navIntake: { en: "Field Intake", sw: "Uwekaji Data Ushaani" },
+  navCompliance: { en: "SHA Compliance", sw: "Uzingatiaji wa SHA" },
   builtWithGemma: { en: "Built with Gemma 4", sw: "Imejengwa na Gemma 4" },
   builtWithGemmaDesc: {
     en: "Multimodal intake, agentic redistribution, and the district copilot are powered by Gemma 4's native function calling.",
@@ -346,6 +347,19 @@ const dict = {
   },
   suggestion4: { en: "Summarize the current redistribution proposals", sw: "Fupisha mapendekezo ya sasa ya ugawaji" },
   suggestion5: { en: "Any outbreak or cluster signals right now?", sw: "Kuna dalili za mlipuko au kundi sasa hivi?" },
+
+  // SHA compliance report
+  complianceEyebrow: { en: "SHA Compliance", sw: "Uzingatiaji wa SHA" },
+  complianceTitle: { en: "Digitization compliance, on demand", sw: "Uzingatiaji wa Uwekaji Data Kidijitali, Papo Hapo" },
+  complianceSubtitle: {
+    en: "SHA requires every facility to digitize stock, bed, staffing, and diagnostics reporting within 90 days or be de-contracted. Generate a Gemma-drafted compliance memo from today's real numbers — the same data every other page reads, never invented.",
+    sw: "SHA inahitaji kila kituo kuweka data ya akiba, vitanda, wafanyakazi, na uchunguzi kidijitali ndani ya siku 90 au kufutiwa mkataba. Tengeneza ripoti ya uzingatiaji iliyoandikwa na Gemma kutoka kwa data halisi ya leo — data ileile inayosomwa na kurasa nyingine, haijawahi kubuniwa.",
+  },
+  complianceDigitized: { en: "Facilities digitized", sw: "Vituo Vilivyowekwa Kidijitali" },
+  complianceDispatched: { en: "Transfers dispatched / proposed", sw: "Uhamishaji Uliotumwa / Uliopendekezwa" },
+  complianceGenerate: { en: "Generate SHA compliance report", sw: "Tengeneza Ripoti ya Uzingatiaji wa SHA" },
+  complianceRegenerate: { en: "Regenerate report", sw: "Tengeneza Ripoti Upya" },
+  complianceGenerating: { en: "Drafting…", sw: "Inaandika…" },
 } as const;
 
 export type TranslationKey = keyof typeof dict;
