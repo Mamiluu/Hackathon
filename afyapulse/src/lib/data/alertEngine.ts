@@ -1,5 +1,6 @@
 import { STOCK_ITEMS, TODAY, getDoctorHistory, getFacility, getFootfallHistory, getLatestStock, getTestAvailabilityToday, getBedsHistory, FACILITIES } from "./store";
 import type { Alert, AlertSeverity, FacilitySnapshot } from "./types";
+import { detectOutbreakSignals, outbreakSignalsToAlerts } from "./outbreakEngine";
 import { t, type Lang } from "@/lib/i18n/translations";
 
 const ESSENTIAL_CATEGORIES = new Set(["antimalarial", "antibiotic", "maternal"]);
@@ -119,7 +120,7 @@ export function getAllSnapshots(lang: Lang = "en"): FacilitySnapshot[] {
 
 export function getAllAlerts(lang: Lang = "en"): Alert[] {
   const severityOrder: Record<AlertSeverity, number> = { critical: 0, warning: 1, info: 2 };
-  return getAllSnapshots(lang)
-    .flatMap((s) => s.alerts)
-    .sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]);
+  const facilityAlerts = getAllSnapshots(lang).flatMap((s) => s.alerts);
+  const outbreakAlerts = outbreakSignalsToAlerts(detectOutbreakSignals(lang));
+  return [...facilityAlerts, ...outbreakAlerts].sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]);
 }
