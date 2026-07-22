@@ -1,5 +1,6 @@
 import { getAllSnapshots, computeFacilitySnapshot, daysOfStockRemaining } from "@/lib/data/alertEngine";
-import { FACILITIES, STOCK_ITEMS, getStockHistory } from "@/lib/data/store";
+import { detectOutbreakSignals } from "@/lib/data/outbreakEngine";
+import { FACILITIES, STOCK_ITEMS, getFacility, getStockHistory } from "@/lib/data/store";
 import { getForecast as fetchForecast } from "@/lib/forecastingClient";
 import { computeAllProposals } from "@/lib/redistribution";
 import type { FunctionDeclaration } from "./client";

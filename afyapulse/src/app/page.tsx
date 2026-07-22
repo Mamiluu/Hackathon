@@ -95,6 +95,10 @@ export default async function DashboardPage() {
         />
       </div>
 
+      <div className="mb-8">
+        <OutbreakWatch signals={outbreakSignals} lang={lang} />
+      </div>
+
       <div>
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-sm font-semibold text-ink-primary">{t("facilitiesWorstFirst", lang)}</h2>
