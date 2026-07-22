@@ -1,4 +1,5 @@
 import { getAllAlerts, getAllSnapshots } from "@/lib/data/alertEngine";
+import { detectOutbreakSignals } from "@/lib/data/outbreakEngine";
 import { FACILITIES, STOCK_ITEMS, TODAY, getFacility } from "@/lib/data/store";
 import { computeAllProposals } from "@/lib/redistribution";
 import { StatTile } from "@/components/StatTile";
@@ -6,6 +7,7 @@ import { AlertList } from "@/components/AlertList";
 import { FacilityCard } from "@/components/FacilityCard";
 import { DistrictMap, type MapRoute } from "@/components/DistrictMap";
 import { StoryBanner } from "@/components/StoryBanner";
+import { OutbreakWatch } from "@/components/OutbreakWatch";
 import { getLang } from "@/lib/i18n/getLang";
 import { t } from "@/lib/i18n/translations";
 import { ensureAutoTranslated } from "@/lib/i18n/autoTranslate.server";
@@ -17,6 +19,7 @@ export default async function DashboardPage() {
   await ensureAutoTranslated(lang);
   const snapshots = getAllSnapshots(lang);
   const alerts = getAllAlerts(lang);
+  const outbreakSignals = detectOutbreakSignals(lang);
   const { proposals } = await computeAllProposals(lang);
 
   const criticalCount = alerts.filter((a) => a.severity === "critical").length;
