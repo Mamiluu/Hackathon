@@ -5,6 +5,7 @@ import type { RedistributionProposal } from "@/lib/data/types";
 import { StatusPill, type Severity } from "./StatusPill";
 import { TraceDisclosure } from "./TraceDisclosure";
 import { cn } from "@/lib/utils";
+import { LOOKAHEAD_DAYS } from "@/lib/redistributionConfig";
 import { t, type Lang } from "@/lib/i18n/translations";
 
 export function RedistributionCard({

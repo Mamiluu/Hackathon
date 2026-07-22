@@ -1,6 +1,7 @@
 import { STOCK_ITEMS, FACILITIES, getFacility, getLatestStock, getStockHistory, getRedistributionOverride } from "./data/store";
 import { getForecast, getRedistributionProposals } from "./forecastingClient";
 import type { AlertSeverity, RedistributionProposal } from "./data/types";
+import { LOOKAHEAD_DAYS } from "./redistributionConfig";
 import { t, type Lang } from "./i18n/translations";
 
 const ESSENTIAL_CATEGORIES = new Set(["antimalarial", "antibiotic", "maternal"]);
@@ -9,7 +10,6 @@ const ESSENTIAL_CATEGORIES = new Set(["antimalarial", "antibiotic", "maternal"])
 // once a facility is already in trouble; feeding it the Holt's-projected position N days out
 // lets it preempt a stockout that hasn't happened yet -- the whole point of forecasting in
 // the first place is wasted if redistribution ignores it and re-derives "today" on its own.
-const LOOKAHEAD_DAYS = 5;
 
 function urgencyFor(daysRemaining: number): AlertSeverity {
   if (daysRemaining < 3) return "critical";
