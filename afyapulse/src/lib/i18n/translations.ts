@@ -242,6 +242,25 @@ const dict = {
     en: "{facility}: {count} test kit type(s) unavailable today",
     sw: "{facility}: aina {count} za vifaa vya uchunguzi hazipatikani leo",
   },
+  outbreakClusterMessage: {
+    en: "Outbreak signal: {item} consumption up {growth}% week-over-week across {count} facilities ({facilities})",
+    sw: "Dalili ya Mlipuko: matumizi ya {item} yameongezeka {growth}% wiki hadi wiki katika vituo {count} ({facilities})",
+  },
+  outbreakWatchMessage: {
+    en: "Watch: {item} consumption up {growth}% week-over-week at {facility}",
+    sw: "Fuatilia: matumizi ya {item} yameongezeka {growth}% wiki hadi wiki katika {facility}",
+  },
+  outbreakWatchTitle: { en: "Outbreak Watch", sw: "Ufuatiliaji wa Mlipuko" },
+  outbreakWatchSubtitle: {
+    en: "Syndromic surveillance, not just stock monitoring — flags case-cluster patterns from consumption acceleration across nearby facilities, before any one of them runs out.",
+    sw: "Ufuatiliaji wa dalili za magonjwa, sio ufuatiliaji wa akiba tu — huainisha mifumo ya makundi ya visa kutokana na kuongezeka kwa matumizi katika vituo jirani, kabla ya kituo chochote kuishiwa.",
+  },
+  outbreakWatchClear: {
+    en: "No cluster signals detected — consumption growth is within normal week-over-week range everywhere.",
+    sw: "Hakuna dalili za makundi zilizogunduliwa — ongezeko la matumizi liko ndani ya kiwango cha kawaida cha wiki hadi wiki kila mahali.",
+  },
+  outbreakClusterBadge: { en: "Cluster", sw: "Kundi" },
+  outbreakWatchBadge: { en: "Watch", sw: "Fuatilia" },
 
   // Facility card / type labels
   typeDispensary: { en: "Dispensary", sw: "Zahanati" },
