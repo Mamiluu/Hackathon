@@ -139,8 +139,8 @@ const dict = {
   redistributionEyebrow: { en: "Redistribution", sw: "Ugawaji Upya" },
   redistributionTitle: { en: "Move stock, not just data", sw: "Sogeza Akiba, Sio Data Tu" },
   redistributionSubtitle: {
-    en: "Solved as a transportation problem (SciPy linear programming) across every facility's live stock position — proposing the minimum-distance transfers that clear deficits without breaching any source facility's own safety buffer.",
-    sw: "Imetatuliwa kama tatizo la usafirishaji (SciPy linear programming) katika hali ya akiba ya kila kituo — ikipendekeza uhamishaji wa umbali mfupi zaidi unaoziba upungufu bila kuathiri akiba ya dharura ya kituo chochote.",
+    en: "Proactive, not reactive: solved as a transportation problem (SciPy linear programming) across every facility's Holt's-projected stock position 5 days out — proposing the minimum-distance transfers that preempt a deficit before it happens, without breaching any source facility's own safety buffer.",
+    sw: "Ni ya kuzuia kabla, si kujibu baada: imetatuliwa kama tatizo la usafirishaji (SciPy linear programming) kwa kutumia utabiri wa Holt wa hali ya akiba ya kila kituo baada ya siku 5 — ikipendekeza uhamishaji wa umbali mfupi zaidi unaozuia upungufu kabla haujatokea, bila kuathiri akiba ya dharura ya kituo chochote.",
   },
   statProposed: { en: "Proposed transfers", sw: "Uhamishaji Uliopendekezwa" },
   statCritical: { en: "Critical", sw: "Dharura" },
@@ -273,9 +273,9 @@ const dict = {
   riskLow: { en: "Low", sw: "Chini" },
   riskCritical: { en: "Critical", sw: "Dharura" },
 
-  redistReasoning: {
-    en: "{dest} has {days} days of {item} remaining. {source} holds surplus {unit} above its own 10-day safety buffer, {distance}km away (~{minutes} min by road).",
-    sw: "{dest} ina siku {days} za {item} zilizobaki. {source} ina ziada ya {unit} zaidi ya akiba yake ya dharura ya siku 10, umbali wa kilomita {distance} (~dakika {minutes} kwa barabara).",
+  redistReasoningProactive: {
+    en: "Projected {horizon} days ahead: {dest} will have {days} days of {item} remaining. {source} is projected to still hold surplus {unit} above its own 10-day safety buffer at that point, {distance}km away (~{minutes} min by road) — moving it now preempts the shortfall before it happens.",
+    sw: "Utabiri wa siku {horizon} zijazo: {dest} itakuwa na siku {days} za {item} zilizobaki. {source} inatabiriwa kuwa na ziada ya {unit} zaidi ya akiba yake ya dharura ya siku 10 wakati huo, umbali wa kilomita {distance} (~dakika {minutes} kwa barabara) — kuihamisha sasa kunazuia upungufu kabla haujatokea.",
   },
 
   riskOk: { en: "Ok", sw: "Sawa" },
