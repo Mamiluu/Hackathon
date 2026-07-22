@@ -1,6 +1,7 @@
 import { generateContent, isGemmaConfigured, type Content } from "./client";
 import { TOOL_DECLARATIONS, executeTool } from "./tools";
 import { getAllAlerts } from "@/lib/data/alertEngine";
+import { detectOutbreakSignals } from "@/lib/data/outbreakEngine";
 import { LANGUAGE_NAME, type Lang } from "@/lib/i18n/translations";
 
 function systemInstruction(lang: Lang) {
