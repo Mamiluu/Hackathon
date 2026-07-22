@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import type { RedistributionProposal } from "@/lib/data/types";
 import { StatusPill, type Severity } from "./StatusPill";
+import { TraceDisclosure } from "./TraceDisclosure";
 import { cn } from "@/lib/utils";
 import { t, type Lang } from "@/lib/i18n/translations";
 
