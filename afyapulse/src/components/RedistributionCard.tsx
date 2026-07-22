@@ -92,6 +92,17 @@ export function RedistributionCard({
 
       <p className="mt-3 border-t border-hairline pt-3 text-xs text-ink-secondary">{proposal.reasoning}</p>
 
+      <TraceDisclosure
+        summary={t("traceShowTransferWork", lang)}
+        rows={[
+          { label: t("traceTransferMethod", lang), value: t("traceTransferMethodValue", lang) },
+          { label: t("traceTransferHorizon", lang), value: t("traceTransferHorizonValue", lang, { horizon: LOOKAHEAD_DAYS }) },
+          { label: t("traceTransferDistance", lang), value: `${proposal.distanceKm} km` },
+          { label: t("traceTransferSafetyBuffer", lang), value: t("traceTransferSafetyBufferValue", lang) },
+        ]}
+        footnote={t("traceTransferFootnote", lang)}
+      />
+
       {brief && (
         <div className="mt-3 rounded-lg border border-series-1/20 bg-series-1/5 p-3 text-xs text-ink-primary">
           <div className="mb-1 flex items-center gap-1.5 font-medium text-series-1">
