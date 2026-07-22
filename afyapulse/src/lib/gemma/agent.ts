@@ -25,6 +25,23 @@ async function mockTurn(userMessage: string, lang: Lang): Promise<CopilotTurnRes
   const lower = userMessage.toLowerCase();
   const toolsUsed: string[] = [];
 
+  const outbreakWords = ["outbreak", "cluster", "surveillance", "mlipuko", "kundi"];
+  if (outbreakWords.some((w) => lower.includes(w))) {
+    toolsUsed.push("list_outbreak_signals");
+    const signals = detectOutbreakSignals(lang);
+    const lines = signals.map((s) => `- ${s.message}`).join("\n");
+    return {
+      text:
+        lang === "sw"
+          ? `(Rasimu ya Nje ya Mtandao — unganisha GEMINI_API_KEY kwa uwezo halisi wa Gemma 4)\n` +
+            `Dalili za mlipuko sasa hivi:\n${lines || "Hakuna dalili za mlipuko zilizogunduliwa."}`
+          : `(Offline draft — connect GEMINI_API_KEY for live Gemma 4 reasoning)\n` +
+            `Outbreak signals right now:\n${lines || "No outbreak signals detected."}`,
+      mocked: true,
+      toolsUsed,
+    };
+  }
+
   const riskWords = ["risk", "stockout", "stock-out", "critical", "hatari", "dharura"];
   if (riskWords.some((w) => lower.includes(w))) {
     toolsUsed.push("list_at_risk_facilities");
