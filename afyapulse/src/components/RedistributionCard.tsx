@@ -4,7 +4,6 @@ import { useEffect, useState, useTransition } from "react";
 import type { RedistributionProposal } from "@/lib/data/types";
 import { StatusPill, type Severity } from "./StatusPill";
 import { TraceDisclosure } from "./TraceDisclosure";
-import { cn } from "@/lib/utils";
 import { LOOKAHEAD_DAYS } from "@/lib/redistributionConfig";
 import { readLocalOverride, writeLocalOverride } from "@/lib/localOverrideStore";
 import { t, type Lang } from "@/lib/i18n/translations";
@@ -135,18 +134,22 @@ export function RedistributionCard({
       )}
 
       <div className="mt-4 flex items-center gap-2">
-        <button
-          onClick={dispatch}
-          disabled={status === "dispatched" || isPending}
-          className={cn(
-            "rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
-            status === "dispatched"
-              ? "cursor-default bg-status-good/15 text-status-good"
-              : "bg-series-1 text-white hover:bg-series-1/90 disabled:opacity-60"
-          )}
-        >
-          {status === "dispatched" ? t("dispatchedCheck", lang) : isPending ? t("dispatching", lang) : t("approveDispatch", lang)}
-        </button>
+        {status === "dispatched" ? (
+          // Deliberately a <span>, not a disabled <button>: a colored, undimmed disabled button
+          // still reads as clickable at a glance. Once dispatched this is a closed fact, not an
+          // action -- it shouldn't be shaped like one.
+          <span className="inline-flex items-center gap-1.5 rounded-md bg-status-good/15 px-3 py-1.5 text-xs font-medium text-status-good">
+            {t("dispatchedCheck", lang)}
+          </span>
+        ) : (
+          <button
+            onClick={dispatch}
+            disabled={isPending}
+            className="rounded-md bg-series-1 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-series-1/90 disabled:opacity-60"
+          >
+            {isPending ? t("dispatching", lang) : t("approveDispatch", lang)}
+          </button>
+        )}
         <button
           onClick={generateBrief}
           disabled={briefLoading}
