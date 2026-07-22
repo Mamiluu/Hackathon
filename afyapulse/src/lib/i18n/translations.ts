@@ -262,6 +262,41 @@ const dict = {
   outbreakClusterBadge: { en: "Cluster", sw: "Kundi" },
   outbreakWatchBadge: { en: "Watch", sw: "Fuatilia" },
 
+  // Trust / explainability trace panels
+  traceShowWork: { en: "Show your work — why this score?", sw: "Onyesha Hesabu — kwa nini alama hii?" },
+  traceStockScore: { en: "Stock score (40% weight)", sw: "Alama ya Akiba (uzito 40%)" },
+  traceDoctorScore: { en: "Doctor attendance (25% weight)", sw: "Mahudhurio ya Daktari (uzito 25%)" },
+  traceBedScore: { en: "Bed pressure score (20% weight)", sw: "Alama ya Msongamano wa Vitanda (uzito 20%)" },
+  traceTestScore: { en: "Diagnostics availability (15% weight)", sw: "Upatikanaji wa Uchunguzi (uzito 15%)" },
+  traceDaysOfLabel: { en: "days of", sw: "siku za" },
+  traceOccupiedLabel: { en: "occupied", sw: "imejaa" },
+  traceScoreFootnote: {
+    en: "healthScore = 0.40×stock + 0.25×doctors + 0.20×beds + 0.15×diagnostics, recomputed live from today's source records — nothing here is cached or estimated.",
+    sw: "healthScore = 0.40×akiba + 0.25×madaktari + 0.20×vitanda + 0.15×uchunguzi, inahesabiwa upya moja kwa moja kutoka kwa rekodi za leo — hakuna kinachohifadhiwa au kukisiwa hapa.",
+  },
+  traceShowForecastWork: { en: "Show your work — how was this forecast?", sw: "Onyesha Hesabu — utabiri huu ulifikiwaje?" },
+  traceForecastMethod: { en: "Method", sw: "Mbinu" },
+  traceForecastWindow: { en: "Fit window", sw: "Dirisha la Kufaa" },
+  traceForecastParams: { en: "Smoothing params", sw: "Vigezo vya Kulainisha" },
+  traceForecastConfidence: { en: "Confidence", sw: "Uhakika" },
+  traceForecastHistoryDays: { en: "History available", sw: "Historia Iliyopo" },
+  traceForecastFootnote: {
+    en: "Holt's linear trend exponential smoothing fits level + trend on the most recent 21 days of recorded daily consumption, then simulates on-hand quantity forward day by day until it crosses zero.",
+    sw: "Mbinu ya Holt inafaa kiwango + mwelekeo kwa siku 21 za hivi karibuni za matumizi ya kila siku yaliyorekodiwa, kisha inaiga kiasi kilichopo mbele siku baada ya siku hadi kifikie sifuri.",
+  },
+  traceShowTransferWork: { en: "Show your work — why this transfer?", sw: "Onyesha Hesabu — kwa nini uhamishaji huu?" },
+  traceTransferMethod: { en: "Method", sw: "Mbinu" },
+  traceTransferMethodValue: { en: "Transportation-problem LP (SciPy linprog)", sw: "LP ya Tatizo la Usafirishaji (SciPy linprog)" },
+  traceTransferDistance: { en: "Cost proxy (distance)", sw: "Kigezo cha Gharama (Umbali)" },
+  traceTransferSafetyBuffer: { en: "Source safety buffer", sw: "Akiba ya Dharura ya Chanzo" },
+  traceTransferSafetyBufferValue: { en: "10 days — never breached", sw: "Siku 10 — haivunjwi kamwe" },
+  traceTransferHorizon: { en: "Projection horizon", sw: "Upeo wa Utabiri" },
+  traceTransferHorizonValue: { en: "{horizon} days ahead (Holt's-projected, not today's snapshot)", sw: "Siku {horizon} zijazo (utabiri wa Holt, si hali ya leo)" },
+  traceTransferFootnote: {
+    en: "Objective minimizes distance while a large constant reward per unit shipped biases the solver toward actually clearing deficits, not just staying cheap.",
+    sw: "Lengo linapunguza umbali huku zawadi kubwa ya kila kipimo kinachosafirishwa ikielekeza kikokotoo kuziba upungufu, si kubaki nafuu tu.",
+  },
+
   // Facility card / type labels
   typeDispensary: { en: "Dispensary", sw: "Zahanati" },
   typeHealthCentre: { en: "Health Centre", sw: "Kituo cha Afya" },

@@ -48,6 +48,17 @@ export function computeFacilitySnapshot(facilityId: string, lang: Lang = "en"): 
 
   const healthScore = Math.round(0.4 * stockScore + 0.25 * doctorAttendancePct + 0.2 * bedScore + 0.15 * testScore);
 
+  const worstItemForTrace = essentialItems.find((i) => i.id === worstItemId);
+  const scoreTrace = [
+    {
+      label: t("traceStockScore", lang),
+      value: `${stockScore.toFixed(0)}/100 (${Number.isFinite(minDays) ? minDays.toFixed(1) : "∞"} ${t("traceDaysOfLabel", lang)} ${worstItemForTrace?.name ?? "—"})`,
+    },
+    { label: t("traceDoctorScore", lang), value: `${doctorAttendancePct.toFixed(0)}/100` },
+    { label: t("traceBedScore", lang), value: `${bedScore.toFixed(0)}/100 (${bedOccupancyPct.toFixed(0)}% ${t("traceOccupiedLabel", lang)})` },
+    { label: t("traceTestScore", lang), value: `${testScore.toFixed(0)}/100` },
+  ];
+
   const alerts: Alert[] = [];
   if (stockRisk !== "ok") {
     const worstItem = essentialItems.find((i) => i.id === worstItemId);
@@ -111,6 +122,7 @@ export function computeFacilitySnapshot(facilityId: string, lang: Lang = "en"): 
     footfallToday,
     testKitsMissing,
     alerts,
+    scoreTrace,
   };
 }
 

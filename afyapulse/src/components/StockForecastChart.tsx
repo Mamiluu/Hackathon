@@ -14,6 +14,7 @@ import {
 import type { StockItem } from "@/lib/data/types";
 import { cn, formatCompact } from "@/lib/utils";
 import { StatusPill } from "./StatusPill";
+import { TraceDisclosure } from "./TraceDisclosure";
 import { t, type Lang } from "@/lib/i18n/translations";
 
 interface ChartRow {
@@ -222,9 +223,22 @@ export function StockForecastChart({
       )}
 
       {data && (
-        <div className="mt-2 text-xs text-ink-muted">
-          {t("forecastMethodLabel", lang, { confidence: t(CONFIDENCE_KEY[data.confidence], lang) })}
-        </div>
+        <>
+          <div className="mt-2 text-xs text-ink-muted">
+            {t("forecastMethodLabel", lang, { confidence: t(CONFIDENCE_KEY[data.confidence], lang) })}
+          </div>
+          <TraceDisclosure
+            summary={t("traceShowForecastWork", lang)}
+            rows={[
+              { label: t("traceForecastMethod", lang), value: data.method },
+              { label: t("traceForecastWindow", lang), value: "21d" },
+              { label: t("traceForecastParams", lang), value: "α=0.35, β=0.25" },
+              { label: t("traceForecastHistoryDays", lang), value: `${data.history.length}d` },
+              { label: t("traceForecastConfidence", lang), value: t(CONFIDENCE_KEY[data.confidence], lang) },
+            ]}
+            footnote={t("traceForecastFootnote", lang)}
+          />
+        </>
       )}
     </div>
   );

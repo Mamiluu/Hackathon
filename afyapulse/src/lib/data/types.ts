@@ -96,6 +96,11 @@ export interface RedistributionProposal {
   createdAt: string;
 }
 
+export interface ScoreTraceRow {
+  label: string;
+  value: string;
+}
+
 export interface FacilitySnapshot {
   facility: Facility;
   healthScore: number; // 0-100
@@ -105,4 +110,6 @@ export interface FacilitySnapshot {
   footfallToday: number;
   testKitsMissing: number;
   alerts: Alert[];
+  /** The literal weighted breakdown behind healthScore -- the "show your work" trust trace. */
+  scoreTrace: ScoreTraceRow[];
 }

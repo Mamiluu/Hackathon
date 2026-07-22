@@ -15,6 +15,7 @@ import { HealthMeter } from "@/components/HealthMeter";
 import { Sparkline } from "@/components/Sparkline";
 import { AlertList } from "@/components/AlertList";
 import { StockForecastChart } from "@/components/StockForecastChart";
+import { TraceDisclosure } from "@/components/TraceDisclosure";
 import { getLang } from "@/lib/i18n/getLang";
 import { t } from "@/lib/i18n/translations";
 import { ensureAutoTranslated } from "@/lib/i18n/autoTranslate.server";
@@ -75,8 +76,9 @@ export default async function FacilityDetailPage({ params }: { params: { id: str
             {t("facilityBedsScheduled", lang, { beds: facility.totalBeds, staff: facility.scheduledStaff, date: TODAY })}
           </p>
         </div>
-        <div className="w-40 shrink-0">
+        <div className="w-64 shrink-0">
           <HealthMeter score={snapshot.healthScore} />
+          <TraceDisclosure summary={t("traceShowWork", lang)} rows={snapshot.scoreTrace} footnote={t("traceScoreFootnote", lang)} />
         </div>
       </div>
 
