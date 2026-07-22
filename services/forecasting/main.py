@@ -9,7 +9,8 @@ app = FastAPI(title="AfyaPulse Forecasting & Redistribution Service")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000", "https://afyapulse-blond.vercel.app"],
+    allow_origin_regex=r"https://afyapulse.*\.vercel\.app",
     allow_methods=["*"],
     allow_headers=["*"],
 )
