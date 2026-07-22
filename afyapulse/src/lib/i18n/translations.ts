@@ -360,6 +360,14 @@ const dict = {
   complianceGenerate: { en: "Generate SHA compliance report", sw: "Tengeneza Ripoti ya Uzingatiaji wa SHA" },
   complianceRegenerate: { en: "Regenerate report", sw: "Tengeneza Ripoti Upya" },
   complianceGenerating: { en: "Drafting…", sw: "Inaandika…" },
+  complianceGeneratingSlow: {
+    en: "Still drafting — Gemma generation can take up to a minute, thanks for waiting…",
+    sw: "Bado inaandika — utengenezaji wa Gemma unaweza kuchukua hadi dakika moja, asante kwa kusubiri…",
+  },
+  complianceError: {
+    en: "Couldn't generate the report just now — please try again.",
+    sw: "Imeshindwa kutengeneza ripoti sasa hivi — tafadhali jaribu tena.",
+  },
 } as const;
 
 export type TranslationKey = keyof typeof dict;

@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { extractFromAudio, extractFromImage } from "@/lib/gemma/intake";
 import { parseLang } from "@/lib/i18n/translations";
 
+// Media (image/audio) understanding calls run noticeably slower than plain text generation --
+// see src/app/api/compliance/route.ts for why every Gemma-calling route sets this.
+export const maxDuration = 60;
+
 export async function POST(req: NextRequest) {
   const body = (await req.json()) as { mediaBase64?: string; mimeType?: string; kind?: "image" | "audio"; lang?: string };
   const { mediaBase64, mimeType, kind } = body;

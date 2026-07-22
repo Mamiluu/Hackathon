@@ -4,6 +4,9 @@ import { getRedistributionOverride, setRedistributionOverride } from "@/lib/data
 import { chatComplete } from "@/lib/gemma/client";
 import { LANGUAGE_NAME, parseLang } from "@/lib/i18n/translations";
 
+// See src/app/api/compliance/route.ts for why this is needed on every Gemma-calling route.
+export const maxDuration = 60;
+
 export async function POST(req: NextRequest) {
   const { id, lang: rawLang } = (await req.json()) as { id?: string; lang?: string };
   if (!id) return NextResponse.json({ error: "id is required" }, { status: 400 });

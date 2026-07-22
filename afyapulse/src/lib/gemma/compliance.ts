@@ -63,9 +63,10 @@ export async function generateComplianceReport(
     systemInstruction:
       "You are AfyaPulse's compliance assistant, drafting a short SHA (Social Health Authority) digitization " +
       "compliance memo for a District Health Officer in Kilifi County, Kenya, under SHA's 90-day digitize-or-de-contract " +
-      `directive. Write 4-6 sentences, no markdown, entirely in ${LANGUAGE_NAME[lang]}. Use ONLY the figures given -- ` +
-      "never invent a number. State the digitization coverage, open risk posture (alerts), redistribution activity as " +
-      "evidence of active stock accountability, and outbreak surveillance status. Close with a one-line compliance verdict.",
+      `directive. Write exactly 3 short sentences, no markdown, entirely in ${LANGUAGE_NAME[lang]}. Be terse -- this is a ` +
+      "memo, not an essay. Use ONLY the figures given, never invent a number: sentence 1 states digitization coverage " +
+      "and open alert posture, sentence 2 cites redistribution/outbreak-surveillance activity as evidence of active " +
+      "accountability, sentence 3 is the one-line compliance verdict.",
     messages: [{ role: "user", text: statsLine(stats) }],
     mockFallback: () => ({
       text:
