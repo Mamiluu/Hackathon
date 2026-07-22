@@ -120,11 +120,17 @@ export function generateMockData(): GeneratedData {
         if (isCrisisFacility && isMalariaItem) {
           // Ganze: consumption climbing, restocks stopped coming ~3 weeks ago.
           consumption *= 1.6;
+          if (daysFromEnd <= 7) {
+            // Still actively worsening in the most recent week, not just plateaued at the
+            // 3-week-old elevated level -- this fresh acceleration, on top of the standing
+            // crisis, is what a week-over-week outbreak-signal detector is built to catch.
+            consumption *= 1.35;
+          }
         }
-        if (isEmergingClusterFacility && isMalariaItem && daysFromEnd <= 10) {
-          // Bamba: a milder, more recent acceleration -- still resupplied normally, so it
-          // never becomes its own stockout crisis, but the week-over-week consumption growth
-          // is real and shows up next to Ganze's, which is exactly the cluster signal.
+        if (isEmergingClusterFacility && isMalariaItem && daysFromEnd <= 7) {
+          // Bamba: a second facility accelerating in the same recent week -- still resupplied
+          // normally, so it never becomes its own stockout crisis, but the week-over-week
+          // consumption growth next to Ganze's is exactly the two-facility cluster signal.
           consumption *= 1.3;
         }
 
