@@ -1,12 +1,18 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import type { RedistributionProposal } from "@/lib/data/types";
 import { StatusPill, type Severity } from "./StatusPill";
 import { TraceDisclosure } from "./TraceDisclosure";
 import { cn } from "@/lib/utils";
 import { LOOKAHEAD_DAYS } from "@/lib/redistributionConfig";
+import { readLocalOverride, writeLocalOverride } from "@/lib/localOverrideStore";
 import { t, type Lang } from "@/lib/i18n/translations";
+
+interface LocalOverride {
+  status: RedistributionProposal["status"];
+  brief?: string;
+}
 
 export function RedistributionCard({
   proposal,
@@ -28,6 +34,20 @@ export function RedistributionCard({
   const [briefLoading, setBriefLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
 
+  const overrideKey = `redistribution:${proposal.id}`;
+
+  // The server-side override store (lib/data/store.ts) doesn't reliably persist in Vercel's
+  // production environment -- this browser's own localStorage is the source of truth for
+  // "did I already act on this" across a refresh during an actual demo session.
+  useEffect(() => {
+    const local = readLocalOverride<LocalOverride>(overrideKey);
+    if (local) {
+      setStatus(local.status);
+      if (local.brief) setBrief(local.brief);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [overrideKey]);
+
   function dispatch() {
     startTransition(async () => {
       await fetch("/api/redistribution/action", {
@@ -36,6 +56,7 @@ export function RedistributionCard({
         body: JSON.stringify({ id: proposal.id, status: "dispatched" }),
       });
       setStatus("dispatched");
+      writeLocalOverride<LocalOverride>(overrideKey, { status: "dispatched", brief });
     });
   }
 
@@ -49,6 +70,7 @@ export function RedistributionCard({
       });
       const json = await res.json();
       setBrief(json.brief);
+      writeLocalOverride<LocalOverride>(overrideKey, { status, brief: json.brief });
     } finally {
       setBriefLoading(false);
     }

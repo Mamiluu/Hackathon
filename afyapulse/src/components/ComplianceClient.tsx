@@ -1,9 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { readLocalOverride, writeLocalOverride } from "@/lib/localOverrideStore";
 import { t, type Lang } from "@/lib/i18n/translations";
 
 const SLOW_HINT_AFTER_MS = 8000;
+
+interface CachedReport {
+  report: string;
+  mocked: boolean;
+}
 
 export function ComplianceClient({ lang }: { lang: Lang }) {
   const [report, setReport] = useState<string | null>(null);
@@ -12,6 +18,20 @@ export function ComplianceClient({ lang }: { lang: Lang }) {
   const [slow, setSlow] = useState(false);
   const [error, setError] = useState(false);
   const slowTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const overrideKey = `compliance-report:${lang}`;
+
+  // Same rationale as RedistributionCard: this is a ~50s+ generation on this Gemma model tier,
+  // and the server-side cache doesn't survive Vercel's production filesystem -- so a pre-generated
+  // report (e.g. run once before going on stage) survives a refresh via this browser's own cache.
+  useEffect(() => {
+    const cached = readLocalOverride<CachedReport>(overrideKey);
+    if (cached) {
+      setReport(cached.report);
+      setMocked(cached.mocked);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [overrideKey]);
 
   useEffect(() => () => {
     if (slowTimer.current) clearTimeout(slowTimer.current);
@@ -33,6 +53,7 @@ export function ComplianceClient({ lang }: { lang: Lang }) {
       const json = await res.json();
       setReport(json.report);
       setMocked(json.mocked);
+      writeLocalOverride<CachedReport>(overrideKey, { report: json.report, mocked: json.mocked });
     } catch {
       setError(true);
     } finally {
