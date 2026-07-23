@@ -16,13 +16,32 @@ const STATIC_LANGS: Lang[] = ["en", "sw"];
 const CHUNK_SIZE = 20;
 const PRECACHE_DIR = path.join(process.cwd(), "src", "lib", "i18n", "precache");
 
+// The free-tier Gemini API key backing this app is hard-capped at 30 requests/minute
+// (confirmed via a live 429: "generate_content_free_tier_requests, limit: 30"). Firing all
+// ~108 chunk-translation calls at once blew straight through that. This paces requests well
+// under the ceiling and retries on 429 instead of giving up.
+const REQUEST_SPACING_MS = 2500; // ~24/min, leaving headroom
+const MAX_RETRIES = 3;
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 function chunkEntries<T>(entries: [string, T][], size: number): [string, T][][] {
   const chunks: [string, T][][] = [];
   for (let i = 0; i < entries.length; i += size) chunks.push(entries.slice(i, i + size));
   return chunks;
 }
 
-async function translateChunk(lang: Lang, chunk: Record<string, string>): Promise<Record<string, string> | null> {
+let lastRequestAt = 0;
+async function paced<T>(fn: () => Promise<T>): Promise<T> {
+  const wait = Math.max(0, lastRequestAt + REQUEST_SPACING_MS - Date.now());
+  if (wait > 0) await sleep(wait);
+  lastRequestAt = Date.now();
+  return fn();
+}
+
+async function translateChunkOnce(lang: Lang, chunk: Record<string, string>): Promise<Record<string, string> | null> {
   const result = await chatComplete({
     systemInstruction:
       `Translate the values of this JSON object from English into ${LANGUAGE_NAME[lang]}. ` +
@@ -46,14 +65,25 @@ async function translateChunk(lang: Lang, chunk: Record<string, string>): Promis
   }
 }
 
+async function translateChunk(lang: Lang, chunk: Record<string, string>): Promise<Record<string, string> | null> {
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    const result = await paced(() => translateChunkOnce(lang, chunk));
+    if (result) return result;
+    if (attempt < MAX_RETRIES) await sleep(REQUEST_SPACING_MS * attempt); // back off a bit more each retry
+  }
+  return null;
+}
+
 async function translateLanguage(lang: Lang): Promise<{ lang: Lang; ok: boolean; keys: number }> {
   const chunks = chunkEntries(Object.entries(ENGLISH_SOURCE), CHUNK_SIZE);
-  const results = await Promise.all(chunks.map((chunk) => translateChunk(lang, Object.fromEntries(chunk))));
-
-  if (results.some((r) => r === null)) return { lang, ok: false, keys: 0 };
-
   const merged: Record<string, string> = {};
-  for (const r of results) Object.assign(merged, r);
+
+  // Sequential, not parallel: this whole run shares one 30-req/min budget across every language.
+  for (const chunk of chunks) {
+    const result = await translateChunk(lang, Object.fromEntries(chunk));
+    if (!result) return { lang, ok: false, keys: Object.keys(merged).length };
+    Object.assign(merged, result);
+  }
 
   const complete = Object.keys(ENGLISH_SOURCE).every((k) => typeof merged[k] === "string" && merged[k].length > 0);
   if (!complete) return { lang, ok: false, keys: Object.keys(merged).length };
@@ -63,8 +93,14 @@ async function translateLanguage(lang: Lang): Promise<{ lang: Lang; ok: boolean;
   return { lang, ok: true, keys: Object.keys(merged).length };
 }
 
-export async function GET() {
-  const targets = ALL_LANGS.filter((l) => !STATIC_LANGS.includes(l));
-  const results = await Promise.all(targets.map((lang) => translateLanguage(lang)));
+export async function GET(req: Request) {
+  const url = new URL(req.url);
+  const only = url.searchParams.get("lang");
+  const targets = only ? [only as Lang] : ALL_LANGS.filter((l) => !STATIC_LANGS.includes(l));
+
+  const results: { lang: Lang; ok: boolean; keys: number }[] = [];
+  for (const lang of targets) {
+    results.push(await translateLanguage(lang));
+  }
   return NextResponse.json({ results, totalKeys: Object.keys(ENGLISH_SOURCE).length });
 }
