@@ -1,49 +1,35 @@
 <!--
-  DRAFT for the Kaggle Writeup (Track 3: Smart Health).
-  Word count target: under 1500 (Kaggle penalizes over-limit submissions).
-  This file is NOT auto-submitted anywhere -- copy this into Kaggle's "New Writeup" editor,
-  attach the repo + live demo links in "Project Links" under Attachments (per Kaggle's own
-  instructions, not inline in the text), select Track 3, review, then click Submit --
-  a saved-but-unsubmitted draft is NOT considered by judges. Read the note at the bottom
-  before you finalize the "challenges" section -- it's flagged for a reason.
+  REWRITTEN to match Kaggle's actual "Project Description" template (Inspiration / How we
+  built it / The Prototype / Challenges we ran into) rather than free-form sections.
+  Paste each heading's content under the matching template heading Kaggle already gave you --
+  don't replace their headings, just fill under them. Total body is ~1,150 words, under the
+  1,500-word competition limit with room to spare.
+
+  ACTION NEEDED BEFORE SUBMITTING: "The Prototype" section needs a real 2-minute demo video
+  link -- Kaggle's template explicitly asks for one, separate from the GitHub repo / live demo
+  links. See VIDEO_SCRIPT.md (same folder) for a ready-to-record script sized to fit 2 minutes.
 -->
 
-# AfyaPulse
+## 💡 Inspiration
 
-### The heartbeat Kenya's health supply chain never had
+Kenya's primary health centres don't lack data — they lack a place where their data adds up to a decision. Stock levels, bed occupancy, doctor attendance, and diagnostic availability are all tracked somewhere, but DHIS2, eCHIS, and KEMSA's supply logistics system don't natively talk to each other. A facility can sit at zero stock on a medicine while another an hour away holds surplus of the exact same drug, and nobody with the authority to fix it sees both numbers at once. This stopped being a hypothetical problem on 1 July 2026, when Kenya's Social Health Authority gave every hospital 90 days to digitize stock, bed, staffing, and diagnostics reporting or have its SHA contract terminated. We built AfyaPulse to be the reasoning layer a District Health Officer would actually need to meet that deadline — not another dashboard that shows the crisis, but one that computes the fix and lets a human dispatch it.
 
----
+## 🛠️ How we built it
 
-## The Problem
+**Model:** Gemma 4, the 26B mixture-of-experts instruction-tuned variant (`gemma-4-26b-a4b-it`), accessed via the Gemini Generative Language REST API — chosen over the 31B dense variant specifically for lower latency in an interactive copilot.
 
-Kenya's primary health centres don't lack data — they lack a place where their data adds up to a decision. Stock levels, bed occupancy, doctor attendance, and diagnostic availability are tracked, but DHIS2, eCHIS, and KEMSA's supply logistics system don't natively talk to each other. A facility can sit at zero stock on a medicine while another an hour away holds surplus of the exact same drug, and nobody with the authority to fix it sees both numbers at once. This is no longer just an operational gap: Kenya's Social Health Authority issued a formal 90-day directive on 1 July 2026 requiring every hospital to digitize stock, bed, staffing, and diagnostics reporting or have its SHA contract terminated. The compliance clock is already running.
+**Technique:** Prompt engineering plus native function calling, not RAG or fine-tuning. Every generation-heavy feature is constrained by an explicit system instruction ("never invent a number") and grounded in real tool calls or real data handed to the model, rather than retrieved context or a fine-tuned checkpoint. Gemma is used five distinct ways: (1) **agentic function calling** — a District Health Officer copilot with five native tools (list at-risk facilities, get a facility's status, get an item's forecast, list redistribution proposals, list outbreak signals) that Gemma decides when and how to call across up to four reasoning rounds per turn; (2) **structured generation from constrained inputs** — redistribution dispatch briefs and a one-click SHA compliance memo, composed only from figures we hand the model; (3) **multimodal understanding** — a CHV photographs a stock shelf or paper register, or records a voice note, and Gemma's vision/audio extract structured item/quantity/unit data directly; (4) **self-translation** — Gemma translated the app's own ~180 UI strings into six languages beyond the two hand-verified ones, pre-generated and bundled rather than called live per visitor; (5) **designed-in graceful degradation** — every Gemma-touching feature has a labeled mock fallback, so the app runs end-to-end with zero required API keys.
 
-## The Solution
+**Frameworks:** Next.js 14 / TypeScript (App Router, server components) for the frontend and API layer, deployed on Vercel. A separate Python FastAPI microservice, deployed on Render, does the numerical heavy lifting: Holt's linear trend exponential smoothing for stock-out forecasting, and `scipy.optimize.linprog` solving cross-facility redistribution as a genuine transportation-problem linear program. We call the Gemini REST API directly rather than through Transformers/Keras — there's no local inference here, so a full ML framework would have added weight without adding capability.
 
-AfyaPulse is a reasoning layer that sits on top of the kind of data DHIS2/KEMSA/eCHIS already collect and turns it into three things a District Health Officer can act on today: a stock-out forecast, an optimized cross-facility redistribution plan, and a Gemma 4 copilot to interrogate it all in plain language — across eight real, geo-located Kilifi County facilities. The architecture is three layers: **Sense** (multimodal field intake), **Reason** (forecasting, optimization, and outbreak surveillance), and **Trust** (nothing moves stock without an explicit human approval, and every number is traceable to its source).
+## 🧪 The Prototype
 
-## How Gemma 4 Is the Engine, Not a Wrapper
+- 🎥 2-minute demo video: [INSERT VIDEO LINK — see VIDEO_SCRIPT.md]
+- 💻 GitHub repo: https://github.com/Mamiluu/Hackathon
+- 🌐 Live demo: https://afyapulse-blond.vercel.app
 
-Gemma 4 (the 26B mixture-of-experts instruction-tuned variant, chosen over the 31B dense model specifically for interactive latency) does real work in five distinct ways, not one chat window bolted on top:
+AfyaPulse covers Track 3's full brief — stock monitoring, bed/staffing visibility, diagnostics availability, stock-out forecasting, and redistribution recommendations that flag underperforming facilities — across eight real, geo-located Kilifi County facilities, and adds a syndromic outbreak-surveillance layer that watches for abnormal consumption acceleration across neighboring facilities before any single one runs out. Nothing moves stock without an explicit human "Approve & Dispatch" click — every number traces back to a source record you can click open and see.
 
-1. **Agentic function calling.** The DHO Copilot is given five native tools — list at-risk facilities, get one facility's status, get an item's forecast, list redistribution proposals, list outbreak signals — with a system instruction that forbids inventing numbers. Gemma decides which tools to call, executes up to four reasoning rounds per turn, and only answers once it has grounded data. This is the part of the rubric ("is the model core to the solution") we lean on hardest: remove Gemma's function calling and the copilot has no way to answer anything truthfully.
-2. **Structured generation from constrained inputs.** Redistribution dispatch briefs and a one-click SHA compliance memo are composed by Gemma from real figures handed to it, with an explicit instruction never to add a number it wasn't given — turning a raw optimizer output into language a health officer would actually forward.
-3. **Multimodal understanding.** A community health worker photographs a stock shelf or paper register, or records a voice note; Gemma's vision and audio understanding extract structured item/quantity/unit data directly — the "no forms, no re-typing registers" promise of the Sense layer.
-4. **Self-translation of the application itself.** Rather than hand-translating the UI, Gemma translated the app's own ~180 interface strings into six additional languages beyond the two hand-verified ones, cached and bundled rather than called live per visitor.
-5. **Designed-in graceful degradation.** Every Gemma-touching feature has a clearly labeled mock fallback, so the app runs end-to-end with zero required API keys — a real key upgrades the quality of the same features rather than being a hard dependency.
+## 🚧 Challenges we ran into
 
-## Reasoning Beyond the LLM: Two Real Algorithms
-
-Gemma orchestrates, but the numbers it reasons over come from genuine, purpose-fit algorithms, not lookup tables. **Stock-out forecasting** uses Holt's linear trend exponential smoothing — fitting a level and trend on the most recent 21 days of daily consumption and simulating forward to a stock-out date. Croston's method, the more commonly cited demand-forecasting default, is built for sparse, intermittent demand; these facilities draw down medicine every day, so Croston's would be the wrong tool for the actual shape of this data. **Redistribution** is solved as a genuine transportation-problem linear program (`scipy.optimize.linprog`): minimize real great-circle transit distance between facilities, subject to supply, demand, and a 10-day safety buffer no facility can be pushed below, with an objective term that biases the solver toward actually clearing deficits rather than just staying cheap. Redistribution now runs on Holt's-*projected* stock five days out rather than today's snapshot — proactively preempting a shortfall instead of reacting once it exists. A third, newer piece of reasoning — a week-over-week consumption-acceleration detector — distinguishes one facility's normal noise from two or more neighboring facilities accelerating together on the same item, surfacing that as an early outbreak/case-cluster signal before any one of them is even fully out of stock. That reframes the product from "a stock dashboard" to an early-warning system, which is the differentiator we'd point to first.
-
-## Engineering Challenges, Honestly
-
-Building against a live LLM surfaced real constraints worth naming rather than hiding. Gemma's free-tier API quota (30 requests/minute) is fragile under concurrent use, and generation latency for longer free-form text (a compliance memo, a dispatch brief) can run 30–65 seconds on this model tier — solved by pacing/retrying background generation work and by making every user-facing wait state honest (a visible "still working" indicator) rather than silent. Vercel's serverless filesystem is ephemeral in production, which broke a naive disk-based cache for approval state and translation caches; the fix was to make expensive translation work a one-time, committed build artifact rather than a live per-visitor call, and to make approval state browser-scoped for this single-presenter deployment rather than pretending a file-based store was doing more than it could.
-
-## Real-World Impact
-
-AfyaPulse doesn't ask Kenya's health system to replace DHIS2, eCHIS, or KEMSA's LMIS — it's a reasoning layer that could sit on top of the data they already collect, which means adoption doesn't require anyone to migrate anything. Track 3 asks for stock monitoring, bed/staffing visibility, diagnostics availability, stock-out and demand forecasting, and redistribution recommendations that flag underperforming facilities — AfyaPulse covers all of it, and goes further: it computes the fix, not just the alert, and it now watches for outbreak signals before they become supply crises. Against a live, dated regulatory deadline (SHA's 90-day digitize-or-decontract directive), this isn't a hypothetical use case — it's shaped to be the compliance layer a real district health office would need in the next quarter.
-
----
-
-*Live demo: [attach in Project Links] · Public repository: [attach in Project Links] · Track 3: Smart Health*
+The demo-facing features weren't the hard part — the operational edges of building against a live LLM were. Gemma's free-tier API quota (30 requests/minute) is fragile under concurrent use, and generation latency for longer free-form text — a compliance memo, a dispatch brief — can run 30 to 65 seconds on this model tier, which meant every slow feature needed a visible "still working" state instead of a silent hang, and background work needed real pacing and retry logic rather than firing requests all at once. Vercel's serverless filesystem turned out to be read-only/ephemeral in production even though it behaves normally in local development, which silently broke a naive disk-based cache for both approval state and translation output; the fix was to make expensive translation work a one-time, committed build artifact instead of a live per-visitor call, and to make approval state browser-scoped rather than pretend a file write was persisting when it wasn't. On the algorithm side, the honest challenge was resisting the urge to reach for a bigger model or a fancier forecasting method by default — Croston's method is the more commonly cited demand-forecasting tool, but it's built for sparse, intermittent demand, and these facilities draw down medicine every single day, so Holt's linear trend was the right-sized choice for the actual shape of the data, not the flashiest one.
