@@ -73,6 +73,10 @@ const dict = {
     en: "Multimodal intake, agentic redistribution, and the district copilot are powered by Gemma 4's native function calling.",
     sw: "Uwekaji data wa aina nyingi, ugawaji upya wa kiotomatiki, na msaidizi wa wilaya vinaendeshwa na uwezo wa Gemma 4 wa kuita vitendaji moja kwa moja.",
   },
+  copyrightNotice: {
+    en: "© {year} Asya Hafidh. All rights reserved.",
+    sw: "© {year} Asya Hafidh. Haki zote zimehifadhiwa.",
+  },
 
   // Dashboard
   dashboardEyebrow: { en: "District Command Center", sw: "Kituo cha Uongozi wa Wilaya" },

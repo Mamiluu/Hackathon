@@ -42,6 +42,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
               <ThemeToggle />
               <LanguageToggle />
             </div>
+            <div className="px-2 text-[10px] text-ink-muted">{t("copyrightNotice", lang, { year: new Date().getFullYear() })}</div>
           </div>
         </aside>
         <main className="min-w-0 flex-1 px-4 py-6 md:px-8 md:py-8">{children}</main>
