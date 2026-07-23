@@ -17,11 +17,12 @@ const CHUNK_SIZE = 20;
 const PRECACHE_DIR = path.join(process.cwd(), "src", "lib", "i18n", "precache");
 
 // The free-tier Gemini API key backing this app is hard-capped at 30 requests/minute
-// (confirmed via a live 429: "generate_content_free_tier_requests, limit: 30"). Firing all
-// ~108 chunk-translation calls at once blew straight through that. This paces requests well
-// under the ceiling and retries on 429 instead of giving up.
-const REQUEST_SPACING_MS = 2500; // ~24/min, leaving headroom
-const MAX_RETRIES = 3;
+// (confirmed via a live 429: "generate_content_free_tier_requests, limit: 30"), and in practice
+// is fragile even under ~24/min pacing -- other traffic against the same key (this app's own
+// running dev server, etc.) shares the same budget. This paces requests conservatively and
+// retries with backoff instead of giving up.
+const REQUEST_SPACING_MS = 4500; // ~13/min, real headroom under the 30/min ceiling
+const MAX_RETRIES = 4;
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -74,7 +75,21 @@ async function translateChunk(lang: Lang, chunk: Record<string, string>): Promis
   return null;
 }
 
-async function translateLanguage(lang: Lang): Promise<{ lang: Lang; ok: boolean; keys: number }> {
+function alreadyGenerated(lang: Lang): boolean {
+  try {
+    const raw = fs.readFileSync(path.join(PRECACHE_DIR, `${lang}.json`), "utf-8");
+    const parsed = JSON.parse(raw);
+    return Object.keys(ENGLISH_SOURCE).every((k) => typeof parsed[k] === "string" && parsed[k].length > 0);
+  } catch {
+    return false;
+  }
+}
+
+async function translateLanguage(lang: Lang): Promise<{ lang: Lang; ok: boolean; keys: number; skipped?: boolean }> {
+  if (alreadyGenerated(lang)) {
+    return { lang, ok: true, keys: Object.keys(ENGLISH_SOURCE).length, skipped: true };
+  }
+
   const chunks = chunkEntries(Object.entries(ENGLISH_SOURCE), CHUNK_SIZE);
   const merged: Record<string, string> = {};
 
@@ -98,7 +113,7 @@ export async function GET(req: Request) {
   const only = url.searchParams.get("lang");
   const targets = only ? [only as Lang] : ALL_LANGS.filter((l) => !STATIC_LANGS.includes(l));
 
-  const results: { lang: Lang; ok: boolean; keys: number }[] = [];
+  const results: { lang: Lang; ok: boolean; keys: number; skipped?: boolean }[] = [];
   for (const lang of targets) {
     results.push(await translateLanguage(lang));
   }
