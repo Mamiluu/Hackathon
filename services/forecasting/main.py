@@ -101,6 +101,7 @@ class TransferOut(CamelModel):
     est_transit_minutes: float
     cascade_adjusted: bool = False
     cascade_adjusted_day: int | None = None
+    pre_cascade_quantity: float | None = None
 
 
 class RedistributionResponse(CamelModel):

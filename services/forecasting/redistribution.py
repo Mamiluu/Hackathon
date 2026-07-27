@@ -157,6 +157,7 @@ def solve_transfers(positions: list[FacilityPosition]) -> list[Transfer]:
             # checkpoints and cap the transfer if handing out `qty` today would leave
             # it short later in the same horizon (e.g. its own consumption trend keeps
             # climbing past the anchor day).
+            original_qty = qty
             cascade_adjusted = False
             cascade_day: int | None = None
             if s_pos.future_checkpoints:
@@ -178,6 +179,7 @@ def solve_transfers(positions: list[FacilityPosition]) -> list[Transfer]:
                     est_transit_minutes=round((dist / AVG_ROAD_SPEED_KMPH) * 60),
                     cascade_adjusted=cascade_adjusted,
                     cascade_adjusted_day=cascade_day,
+                    pre_cascade_quantity=original_qty if cascade_adjusted else None,
                 )
             )
 
