@@ -64,6 +64,8 @@ def forecast(req: ForecastRequest) -> ForecastResponse:
                 date=p.date,
                 projected_quantity_on_hand=p.projected_quantity_on_hand,
                 projected_daily_consumption=p.projected_daily_consumption,
+                projected_quantity_on_hand_low=p.projected_quantity_on_hand_low,
+                projected_quantity_on_hand_high=p.projected_quantity_on_hand_high,
             )
             for p in result.forecast
         ],
@@ -83,6 +85,8 @@ class FacilityPositionIn(CamelModel):
     quantity_on_hand: float
     daily_consumption: float
     safety_days: float = 10.0
+    quantity_on_hand_low: float | None = None
+    future_checkpoints: list[tuple[int, float]] = Field(default_factory=list)
 
 
 class RedistributionRequest(CamelModel):
@@ -95,6 +99,8 @@ class TransferOut(CamelModel):
     quantity: float
     distance_km: float
     est_transit_minutes: float
+    cascade_adjusted: bool = False
+    cascade_adjusted_day: int | None = None
 
 
 class RedistributionResponse(CamelModel):
