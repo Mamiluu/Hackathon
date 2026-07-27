@@ -77,9 +77,6 @@ export interface RedistributionTransfer {
   quantity: number;
   distanceKm: number;
   estTransitMinutes: number;
-  cascadeAdjusted?: boolean;
-  cascadeAdjustedDay?: number | null;
-  preCascadeQuantity?: number | null;
 }
 
 export interface RedistributionPositionInput {
@@ -89,10 +86,6 @@ export interface RedistributionPositionInput {
   quantityOnHand: number;
   dailyConsumption: number;
   safetyDays?: number;
-  quantityOnHandLow?: number;
-  // (daysFromLookahead, projectedQuantityOnHand) checkpoints past the anchor day, for the
-  // service's post-solve cascade check -- see CASCADE_HORIZON_DAYS in redistributionConfig.ts.
-  futureCheckpoints?: [number, number][];
 }
 
 export async function getRedistributionProposals(
