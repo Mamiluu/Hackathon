@@ -143,19 +143,41 @@ def solve_transfers(positions: list[FacilityPosition]) -> list[Transfer]:
     x = result.x.reshape(n_supply, n_demand)
     for i in range(n_supply):
         for j in range(n_demand):
-            qty = x[i, j]
-            if qty >= 1:  # ignore sub-unit noise
-                s_pos, _ = supply[i]
-                d_pos, _ = demand[j]
-                dist = cost[i, j]
-                transfers.append(
-                    Transfer(
-                        source_facility_id=s_pos.facility_id,
-                        dest_facility_id=d_pos.facility_id,
-                        quantity=round(qty),
-                        distance_km=round(dist, 1),
-                        est_transit_minutes=round((dist / AVG_ROAD_SPEED_KMPH) * 60),
-                    )
+            qty = round(x[i, j])
+            if qty < 1:  # ignore sub-unit noise
+                continue
+
+            s_pos, _ = supply[i]
+            d_pos, _ = demand[j]
+            dist = cost[i, j]
+
+            # Cascade check: the LP only verified the source stays above its buffer at
+            # the one snapshot it solved against. Walk the source's own future
+            # checkpoints and cap the transfer if handing out `qty` today would leave
+            # it short later in the same horizon (e.g. its own consumption trend keeps
+            # climbing past the anchor day).
+            cascade_adjusted = False
+            cascade_day: int | None = None
+            if s_pos.future_checkpoints:
+                tightest_day, tightest_qty = min(s_pos.future_checkpoints, key=lambda c: c[1])
+                if tightest_qty < qty:
+                    qty = max(0, round(tightest_qty))
+                    cascade_adjusted = True
+                    cascade_day = tightest_day
+
+            if qty < 1:  # nothing can be safely spared once the cascade check bites
+                continue
+
+            transfers.append(
+                Transfer(
+                    source_facility_id=s_pos.facility_id,
+                    dest_facility_id=d_pos.facility_id,
+                    quantity=qty,
+                    distance_km=round(dist, 1),
+                    est_transit_minutes=round((dist / AVG_ROAD_SPEED_KMPH) * 60),
+                    cascade_adjusted=cascade_adjusted,
+                    cascade_adjusted_day=cascade_day,
                 )
+            )
 
     return transfers

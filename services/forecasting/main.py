@@ -43,6 +43,8 @@ class ForecastPointOut(CamelModel):
     date: str
     projected_quantity_on_hand: float
     projected_daily_consumption: float
+    projected_quantity_on_hand_low: float
+    projected_quantity_on_hand_high: float
 
 
 class ForecastResponse(CamelModel):
