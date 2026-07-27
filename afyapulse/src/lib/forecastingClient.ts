@@ -4,6 +4,8 @@ export interface ForecastPoint {
   date: string;
   projectedQuantityOnHand: number;
   projectedDailyConsumption: number;
+  projectedQuantityOnHandLow: number;
+  projectedQuantityOnHandHigh: number;
 }
 
 export interface ForecastResult {
@@ -31,10 +33,15 @@ function localFallbackForecast(history: StockRecord[], horizonDays: number): For
     const d = new Date(start);
     d.setUTCDate(d.getUTCDate() + i);
     qty = Math.max(0, qty - avgConsumption);
+    const roundedQty = Math.round(qty * 10) / 10;
     forecast.push({
       date: d.toISOString().slice(0, 10),
-      projectedQuantityOnHand: Math.round(qty * 10) / 10,
+      projectedQuantityOnHand: roundedQty,
       projectedDailyConsumption: Math.round(avgConsumption * 10) / 10,
+      // No residual error tracking in this flat-average fallback, so it has no honest basis
+      // for a confidence band -- report a zero-width band rather than fabricate one.
+      projectedQuantityOnHandLow: roundedQty,
+      projectedQuantityOnHandHigh: roundedQty,
     });
     if (daysToStockout === null && qty <= 0) daysToStockout = i;
   }
