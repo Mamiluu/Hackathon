@@ -318,6 +318,11 @@ const dict = {
     sw: "Utabiri wa siku {horizon} zijazo: {dest} itakuwa na siku {days} za {item} zilizobaki. {source} inatabiriwa kuwa na ziada ya {unit} zaidi ya akiba yake ya dharura ya siku 10 wakati huo, umbali wa kilomita {distance} (~dakika {minutes} kwa barabara) — kuihamisha sasa kunazuia upungufu kabla haujatokea.",
   },
 
+  redistReasoningCascadeAdjusted: {
+    en: "Projected {horizon} days ahead: {dest} will have {days} days of {item} remaining. {source} could spare {original} {unit} at that point, but only {capped} {unit} were dispatched — shipping the full amount would have left {source} short of its own buffer by day {cascadeDay} of the same forecast, {distance}km away (~{minutes} min by road). The transfer still preempts {dest}'s shortfall without creating a new one at {source}.",
+    sw: "Utabiri wa siku {horizon} zijazo: {dest} itakuwa na siku {days} za {item} zilizobaki. {source} ingeweza kutoa {unit} {original} wakati huo, lakini {unit} {capped} tu ndizo zilizosafirishwa — kusafirisha kiasi chote kungeacha {source} bila akiba yake ya dharura ifikapo siku {cascadeDay} ya utabiri huo huo, umbali wa kilomita {distance} (~dakika {minutes} kwa barabara). Uhamisho bado unazuia upungufu wa {dest} bila kuunda mpya kwa {source}.",
+  },
+
   riskOk: { en: "Ok", sw: "Sawa" },
 
   // Facility detail extras
