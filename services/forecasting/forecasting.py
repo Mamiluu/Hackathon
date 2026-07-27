@@ -64,18 +64,28 @@ def _next_dates(last_date: str, horizon_days: int) -> list[str]:
     return [(start + timedelta(days=i)).isoformat() for i in range(1, horizon_days + 1)]
 
 
-def holt_linear_forecast(consumption: list[float]) -> tuple[float, float]:
-    """Fit Holt's linear trend model, return (level, trend) at the end of the series."""
+def holt_linear_forecast(consumption: list[float]) -> tuple[float, float, float]:
+    """Fit Holt's linear trend model, return (level, trend, residual_std) at the end of the series.
+
+    residual_std is the std of one-step-ahead errors (actual y vs. what the model
+    would have predicted the day before, using only information available at the
+    time) -- the model's own track record of being wrong, used to size the
+    confidence band on future projections.
+    """
     series = consumption[-max(RECENT_WINDOW, 2) :]
     level = series[0]
     trend = series[1] - series[0] if len(series) > 1 else 0.0
+    residuals: list[float] = []
 
     for y in series[1:]:
+        predicted = level + trend
+        residuals.append(y - predicted)
         prev_level = level
         level = ALPHA * y + (1 - ALPHA) * (level + trend)
         trend = BETA * (level - prev_level) + (1 - BETA) * trend
 
-    return level, trend
+    sigma = pstdev(residuals) if len(residuals) >= 2 else 0.0
+    return level, trend, sigma
 
 
 def forecast_stockout(history: list[HistoryPoint], horizon_days: int = 21) -> ForecastResult:
@@ -83,7 +93,7 @@ def forecast_stockout(history: list[HistoryPoint], horizon_days: int = 21) -> Fo
         return ForecastResult(forecast=[], days_to_stockout=None, method="holt_linear", confidence="low")
 
     consumption = [max(0.0, h.daily_consumption) for h in history]
-    level, trend = holt_linear_forecast(consumption)
+    level, trend, sigma = holt_linear_forecast(consumption)
 
     last = history[-1]
     qty = last.quantity_on_hand
@@ -96,8 +106,19 @@ def forecast_stockout(history: list[HistoryPoint], horizon_days: int = 21) -> Fo
         projected_consumption = max(0.0, level + i * trend)
         prev_qty = qty
         qty = max(0.0, qty - projected_consumption)
+
+        # Cumulative consumption error over i days grows like sigma * sqrt(i)
+        # under an i.i.d.-error random-walk assumption -- the same reasoning
+        # that justifies Holt's own additive trend structure.
+        band = Z_CONSERVATIVE * sigma * (i**0.5)
         points.append(
-            ForecastPoint(date=date, projected_quantity_on_hand=round(qty, 1), projected_daily_consumption=round(projected_consumption, 2))
+            ForecastPoint(
+                date=date,
+                projected_quantity_on_hand=round(qty, 1),
+                projected_daily_consumption=round(projected_consumption, 2),
+                projected_quantity_on_hand_low=round(max(0.0, qty - band), 1),
+                projected_quantity_on_hand_high=round(qty + band, 1),
+            )
         )
         if days_to_stockout is None and qty <= 0 and projected_consumption > 0:
             # Linear-interpolate within the day for a smoother estimate.
