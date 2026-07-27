@@ -13,14 +13,23 @@ Holt's method:
 
 We fit it on the recent daily-consumption series, then simulate the on-hand
 quantity forward day by day until it crosses zero.
+
+Alongside the point forecast we also track the model's own one-step-ahead
+residuals (actual vs. what Holt's would have predicted the day before) and use
+their standard deviation to widen a confidence band the further out we
+project -- a stockout call 20 days out is not equally certain as one 2 days
+out, and downstream consumers (the redistribution LP) need that distinction
+to avoid treating a point estimate as ground truth.
 """
 
 from dataclasses import dataclass
+from statistics import pstdev
 
 
 ALPHA = 0.35  # level smoothing
 BETA = 0.25  # trend smoothing
 RECENT_WINDOW = 21  # days of history most relevant to "where is this trending now"
+Z_CONSERVATIVE = 0.84  # ~80% one-sided confidence bound on the projected band
 
 
 @dataclass
@@ -35,6 +44,8 @@ class ForecastPoint:
     date: str
     projected_quantity_on_hand: float
     projected_daily_consumption: float
+    projected_quantity_on_hand_low: float
+    projected_quantity_on_hand_high: float
 
 
 @dataclass
