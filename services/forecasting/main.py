@@ -117,6 +117,8 @@ def propose_redistribution(req: RedistributionRequest) -> RedistributionResponse
             quantity_on_hand=p.quantity_on_hand,
             daily_consumption=p.daily_consumption,
             safety_days=p.safety_days,
+            quantity_on_hand_low=p.quantity_on_hand_low,
+            future_checkpoints=p.future_checkpoints,
         )
         for p in req.positions
     ]
@@ -129,6 +131,8 @@ def propose_redistribution(req: RedistributionRequest) -> RedistributionResponse
                 quantity=t.quantity,
                 distance_km=t.distance_km,
                 est_transit_minutes=t.est_transit_minutes,
+                cascade_adjusted=t.cascade_adjusted,
+                cascade_adjusted_day=t.cascade_adjusted_day,
             )
             for t in transfers
         ]
