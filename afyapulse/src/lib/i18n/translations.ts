@@ -302,6 +302,16 @@ const dict = {
     sw: "Lengo linapunguza umbali huku zawadi kubwa ya kila kipimo kinachosafirishwa ikielekeza kikokotoo kuziba upungufu, si kubaki nafuu tu.",
   },
 
+  traceCascadeCheck: { en: "Cascade check", sw: "Ukaguzi wa Athari" },
+  traceCascadeCheckSafe: {
+    en: "Verified safe through day 21 — the source doesn't slip below its own buffer later in the horizon.",
+    sw: "Imethibitishwa salama hadi siku 21 — chanzo hakitoshuki chini ya akiba yake baadaye katika kipindi hicho.",
+  },
+  traceCascadeCheckAdjusted: {
+    en: "Quantity capped — the full amount would have left the source short later in its own forecast, so this transfer stays within what it can safely spare.",
+    sw: "Kiasi kimepunguzwa — kiasi chote kingeacha chanzo bila akiba baadaye katika utabiri wake, hivyo uhamisho huu unabaki ndani ya kile kinachoweza kutoa kwa usalama.",
+  },
+
   // Facility card / type labels
   typeDispensary: { en: "Dispensary", sw: "Zahanati" },
   typeHealthCentre: { en: "Health Centre", sw: "Kituo cha Afya" },
