@@ -16,10 +16,25 @@ scipy.optimize.linprog, not a lookup table:
 
 We solve it per item, since transferring "stock" across different medicines
 isn't meaningful.
+
+Two refinements on top of the base LP, both closing gaps a plain point-forecast
+transportation solve would have:
+
+1. Supply and demand are evaluated against the *pessimistic* (low-confidence-
+   band) projection, not the point estimate, when one is available -- a
+   facility isn't judged to have real surplus, nor a real deficit, off a single
+   number the forecast could easily be wrong about.
+2. Once the LP proposes a transfer, we walk the source facility's own future
+   forecast checkpoints (beyond the day the LP solved against) and cap the
+   transfer if it would leave the source short later in the same horizon.
+   Without this, the LP can hand out stock that looks safe to give away at
+   day 5 but strands the donor by day 15 because its own consumption trend
+   keeps climbing -- a second-order stockout the LP would never see since it
+   only ever looks at one snapshot in time.
 """
 
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import numpy as np
 from scipy.optimize import linprog
@@ -35,6 +50,10 @@ class FacilityPosition:
     quantity_on_hand: float
     daily_consumption: float
     safety_days: float = 10.0  # never transfer a facility below this many days of buffer
+    quantity_on_hand_low: float | None = None  # pessimistic band; falls back to quantity_on_hand
+    # (days_from_now, projected_quantity_on_hand) checkpoints beyond the LP's anchor day, used
+    # only for the post-solve cascade check below.
+    future_checkpoints: list[tuple[int, float]] = field(default_factory=list)
 
 
 @dataclass
@@ -44,6 +63,8 @@ class Transfer:
     quantity: float
     distance_km: float
     est_transit_minutes: float
+    cascade_adjusted: bool = False
+    cascade_adjusted_day: int | None = None
 
 
 def haversine_km(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
