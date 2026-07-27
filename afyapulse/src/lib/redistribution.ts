@@ -22,26 +22,37 @@ interface ProjectedPosition {
   lat: number;
   lng: number;
   quantityOnHand: number;
+  quantityOnHandLow: number;
   dailyConsumption: number;
   daysRemaining: number;
+  futureCheckpoints: [number, number][];
 }
 
 async function projectedPosition(facility: (typeof FACILITIES)[number], itemId: string): Promise<ProjectedPosition> {
   const history = getStockHistory(facility.id, itemId);
   const latest = getLatestStock(facility.id, itemId);
-  const forecast = await getForecast(history, LOOKAHEAD_DAYS);
+  const forecast = await getForecast(history, CASCADE_HORIZON_DAYS);
   const projected = forecast.forecast[LOOKAHEAD_DAYS - 1];
 
   const quantityOnHand = projected?.projectedQuantityOnHand ?? latest?.quantityOnHand ?? 0;
+  const quantityOnHandLow = projected?.projectedQuantityOnHandLow ?? quantityOnHand;
   const dailyConsumption = projected?.projectedDailyConsumption ?? latest?.dailyConsumption ?? 0.01;
+
+  // Checkpoints beyond the LP's anchor day, for the redistribution service's cascade check --
+  // day offsets are relative to the anchor (LOOKAHEAD_DAYS), not to today.
+  const futureCheckpoints: [number, number][] = forecast.forecast
+    .slice(LOOKAHEAD_DAYS)
+    .map((point, idx) => [idx + 1, point.projectedQuantityOnHand]);
 
   return {
     facilityId: facility.id,
     lat: facility.lat,
     lng: facility.lng,
     quantityOnHand,
+    quantityOnHandLow,
     dailyConsumption,
     daysRemaining: dailyConsumption > 0 ? quantityOnHand / dailyConsumption : Infinity,
+    futureCheckpoints,
   };
 }
 
