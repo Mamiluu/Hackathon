@@ -65,6 +65,7 @@ class Transfer:
     est_transit_minutes: float
     cascade_adjusted: bool = False
     cascade_adjusted_day: int | None = None
+    pre_cascade_quantity: float | None = None  # what the LP originally proposed, before capping
 
 
 def haversine_km(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
