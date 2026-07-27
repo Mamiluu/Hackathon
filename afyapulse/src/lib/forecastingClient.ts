@@ -79,6 +79,7 @@ export interface RedistributionTransfer {
   estTransitMinutes: number;
   cascadeAdjusted?: boolean;
   cascadeAdjustedDay?: number | null;
+  preCascadeQuantity?: number | null;
 }
 
 export interface RedistributionPositionInput {

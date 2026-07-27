@@ -134,6 +134,7 @@ def propose_redistribution(req: RedistributionRequest) -> RedistributionResponse
                 est_transit_minutes=t.est_transit_minutes,
                 cascade_adjusted=t.cascade_adjusted,
                 cascade_adjusted_day=t.cascade_adjusted_day,
+                pre_cascade_quantity=t.pre_cascade_quantity,
             )
             for t in transfers
         ]

@@ -92,6 +92,7 @@ export interface RedistributionProposal {
   distanceKm: number;
   status: RedistributionStatus;
   reasoning: string;
+  cascadeAdjusted?: boolean; // quantity was capped to protect the source facility later in its own forecast horizon
   brief?: string; // Gemma-generated dispatch brief
   createdAt: string;
 }

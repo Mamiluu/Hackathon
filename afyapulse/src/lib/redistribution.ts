@@ -66,12 +66,14 @@ export async function computeAllProposals(lang: Lang = "en"): Promise<{ proposal
     const positionByFacility = new Map(positions.map((p) => [p.facilityId, p]));
 
     const { transfers, unavailable } = await getRedistributionProposals(
-      positions.map(({ facilityId, lat, lng, quantityOnHand, dailyConsumption }) => ({
+      positions.map(({ facilityId, lat, lng, quantityOnHand, quantityOnHandLow, dailyConsumption, futureCheckpoints }) => ({
         facilityId,
         lat,
         lng,
         quantityOnHand,
+        quantityOnHandLow,
         dailyConsumption,
+        futureCheckpoints,
       }))
     );
     if (unavailable) anyUnavailable = true;
@@ -84,6 +86,31 @@ export async function computeAllProposals(lang: Lang = "en"): Promise<{ proposal
       const destFacility = getFacility(transfer.destFacilityId);
       const override = getRedistributionOverride(id);
 
+      const reasoning = transfer.cascadeAdjusted
+        ? t("redistReasoningCascadeAdjusted", lang, {
+            dest: destFacility?.name ?? transfer.destFacilityId,
+            days: Number.isFinite(destDaysRemaining) ? destDaysRemaining.toFixed(1) : "—",
+            horizon: LOOKAHEAD_DAYS,
+            item: item.name,
+            source: sourceFacility?.name ?? transfer.sourceFacilityId,
+            unit: item.unit,
+            distance: transfer.distanceKm,
+            minutes: transfer.estTransitMinutes,
+            original: transfer.preCascadeQuantity ?? transfer.quantity,
+            capped: transfer.quantity,
+            cascadeDay: (transfer.cascadeAdjustedDay ?? 0) + LOOKAHEAD_DAYS,
+          })
+        : t("redistReasoningProactive", lang, {
+            dest: destFacility?.name ?? transfer.destFacilityId,
+            days: Number.isFinite(destDaysRemaining) ? destDaysRemaining.toFixed(1) : "—",
+            horizon: LOOKAHEAD_DAYS,
+            item: item.name,
+            source: sourceFacility?.name ?? transfer.sourceFacilityId,
+            unit: item.unit,
+            distance: transfer.distanceKm,
+            minutes: transfer.estTransitMinutes,
+          });
+
       proposals.push({
         id,
         sourceFacilityId: transfer.sourceFacilityId,
@@ -94,16 +121,8 @@ export async function computeAllProposals(lang: Lang = "en"): Promise<{ proposal
         estTransitMinutes: transfer.estTransitMinutes,
         distanceKm: transfer.distanceKm,
         status: override?.status ?? "proposed",
-        reasoning: t("redistReasoningProactive", lang, {
-          dest: destFacility?.name ?? transfer.destFacilityId,
-          days: Number.isFinite(destDaysRemaining) ? destDaysRemaining.toFixed(1) : "—",
-          horizon: LOOKAHEAD_DAYS,
-          item: item.name,
-          source: sourceFacility?.name ?? transfer.sourceFacilityId,
-          unit: item.unit,
-          distance: transfer.distanceKm,
-          minutes: transfer.estTransitMinutes,
-        }),
+        cascadeAdjusted: transfer.cascadeAdjusted ?? false,
+        reasoning,
         brief: override?.brief,
         createdAt: new Date().toISOString(),
       });
