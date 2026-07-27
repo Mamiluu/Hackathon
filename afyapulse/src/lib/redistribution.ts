@@ -1,7 +1,7 @@
 import { STOCK_ITEMS, FACILITIES, getFacility, getLatestStock, getStockHistory, getRedistributionOverride } from "./data/store";
 import { getForecast, getRedistributionProposals } from "./forecastingClient";
 import type { AlertSeverity, RedistributionProposal } from "./data/types";
-import { LOOKAHEAD_DAYS } from "./redistributionConfig";
+import { LOOKAHEAD_DAYS, CASCADE_HORIZON_DAYS } from "./redistributionConfig";
 import { t, type Lang } from "./i18n/translations";
 
 const ESSENTIAL_CATEGORIES = new Set(["antimalarial", "antibiotic", "maternal"]);
