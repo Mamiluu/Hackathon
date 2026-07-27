@@ -120,6 +120,10 @@ export function RedistributionCard({
           { label: t("traceTransferHorizon", lang), value: t("traceTransferHorizonValue", lang, { horizon: LOOKAHEAD_DAYS }) },
           { label: t("traceTransferDistance", lang), value: `${proposal.distanceKm} km` },
           { label: t("traceTransferSafetyBuffer", lang), value: t("traceTransferSafetyBufferValue", lang) },
+          {
+            label: t("traceCascadeCheck", lang),
+            value: proposal.cascadeAdjusted ? t("traceCascadeCheckAdjusted", lang) : t("traceCascadeCheckSafe", lang),
+          },
         ]}
         footnote={t("traceTransferFootnote", lang)}
       />
