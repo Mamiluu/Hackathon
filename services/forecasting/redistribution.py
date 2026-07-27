@@ -81,14 +81,19 @@ def solve_transfers(positions: list[FacilityPosition]) -> list[Transfer]:
     demand: list[tuple[FacilityPosition, float]] = []
 
     for p in positions:
+        # Evaluate against the pessimistic (low-confidence-band) projection when we have
+        # one -- a facility is only real "surplus" if it would still be spare stock even
+        # in a worse-than-expected consumption scenario, and only a real "deficit" if the
+        # shortfall holds up under the same pessimistic read.
+        eval_qty = p.quantity_on_hand_low if p.quantity_on_hand_low is not None else p.quantity_on_hand
         buffer_qty = p.safety_days * p.daily_consumption
-        surplus = p.quantity_on_hand - buffer_qty
-        days_remaining = (p.quantity_on_hand / p.daily_consumption) if p.daily_consumption > 0 else math.inf
+        surplus = eval_qty - buffer_qty
+        days_remaining = (eval_qty / p.daily_consumption) if p.daily_consumption > 0 else math.inf
 
         if surplus > 0 and days_remaining > p.safety_days:
             supply.append((p, surplus))
-        elif p.quantity_on_hand < p.daily_consumption * 3:  # under 3 days: real deficit
-            need = max(0.0, buffer_qty - p.quantity_on_hand)
+        elif eval_qty < p.daily_consumption * 3:  # under 3 days: real deficit
+            need = max(0.0, buffer_qty - eval_qty)
             if need > 0:
                 demand.append((p, need))
 
