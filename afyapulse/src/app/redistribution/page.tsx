@@ -28,6 +28,7 @@ export default async function RedistributionPage() {
     };
   });
 
+  // Render the redistribution page with statistics, a district map, and redistribution cards for each proposal
   return (
     <div className="mx-auto max-w-5xl">
       <div className="mb-6">
