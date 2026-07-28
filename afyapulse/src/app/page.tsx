@@ -47,6 +47,8 @@ export default async function DashboardPage() {
     };
   });
 
+  // Render the dashboard page with statistics, alerts, a district map, outbreak signals, and facility cards sorted by health score
+
   return (
     <div className="mx-auto max-w-6xl">
       <div className="mb-6 flex flex-col gap-1">
