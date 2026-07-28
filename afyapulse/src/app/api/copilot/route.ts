@@ -3,7 +3,7 @@ import { runCopilotTurn } from "@/lib/gemma/agent";
 import { parseLang } from "@/lib/i18n/translations";
 
 // Up to MAX_TOOL_ROUNDS Gemma round-trips per turn -- give it real headroom rather than let
-// Vercel's default function timeout kill a multi-tool-call answer mid-flight.
+// 
 export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
