@@ -19,7 +19,7 @@ import { TraceDisclosure } from "@/components/TraceDisclosure";
 import { getLang } from "@/lib/i18n/getLang";
 import { t } from "@/lib/i18n/translations";
 import { ensureAutoTranslated } from "@/lib/i18n/autoTranslate.server";
-
+ 
 export const dynamic = "force-dynamic";
 
 const ESSENTIAL_CATEGORIES = new Set(["antimalarial", "antibiotic", "maternal"]);
@@ -30,6 +30,7 @@ const TYPE_LABEL_KEY = {
   district_hospital: "typeDistrictHospital",
 } as const;
 
+// Returns a severity level based on the number of days of stock remaining. Less than 3 days is critical, less than 7 days is warning, and 7 or more days is good.
 function riskSeverity(days: number): Severity {
   if (days < 3) return "critical";
   if (days < 7) return "warning";
