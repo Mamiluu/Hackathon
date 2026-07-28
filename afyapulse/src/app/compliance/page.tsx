@@ -1,3 +1,4 @@
+// This is a Next.js page component that renders the compliance page of the AfyaPulse application. It imports necessary modules and components, including functions to gather compliance statistics, a StatTile component for displaying statistics, and a ComplianceClient component for handling compliance-related interactions. The page fetches compliance statistics based on the user's language preference and renders them along with the ComplianceClient component.
 import { gatherComplianceStats } from "@/lib/gemma/compliance";
 import { StatTile } from "@/components/StatTile";
 import { ComplianceClient } from "@/components/ComplianceClient";
