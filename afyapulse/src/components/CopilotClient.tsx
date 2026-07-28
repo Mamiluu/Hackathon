@@ -46,6 +46,7 @@ export function CopilotClient({ lang }: { lang: Lang }) {
     }
   }
 
+  // Render the Copilot client interface with a message history, input field, and suggestion buttons
   return (
     <div className="mx-auto flex h-[calc(100vh-6rem)] max-w-3xl flex-col">
       <div className="mb-4">
