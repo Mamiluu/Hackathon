@@ -35,6 +35,8 @@ export default async function DashboardPage() {
   const topProposal = proposals[0];
   const routes: MapRoute[] = proposals.slice(0, 6).map((p) => {
     const item = STOCK_ITEMS.find((i) => i.id === p.itemId)!;
+
+    // Return a route object for the district map, including source and destination facility IDs, urgency, quantity, item name, and unit
     return {
       sourceId: p.sourceFacilityId,
       destId: p.destFacilityId,
