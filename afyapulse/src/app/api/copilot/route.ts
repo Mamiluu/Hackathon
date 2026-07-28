@@ -3,7 +3,7 @@ import { runCopilotTurn } from "@/lib/gemma/agent";
 import { parseLang } from "@/lib/i18n/translations";
 
 // Up to MAX_TOOL_ROUNDS Gemma round-trips per turn -- give it real headroom rather than let
-// 
+// the platform kill the request mid-turn and leave the user with a stuck loading state. 
 export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
