@@ -1,3 +1,4 @@
+// This is a Next.js API route that handles POST requests to generate a dispatch brief for a redistribution proposal. It uses the NextRequest and NextResponse objects from the Next.js server module, as well as custom functions computeAllProposals, getRedistributionOverride, setRedistributionOverride, and chatComplete from the application's library. The route validates the request body to ensure that it contains a valid proposal ID and language before generating the brief and updating the proposal's status in the data store.
 import { NextRequest, NextResponse } from "next/server";
 import { computeAllProposals } from "@/lib/redistribution";
 import { getRedistributionOverride, setRedistributionOverride } from "@/lib/data/store";
