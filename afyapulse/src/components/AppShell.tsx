@@ -10,6 +10,8 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
   const lang = getLang();
   await ensureAutoTranslated(lang);
   const autoDict = getCachedTranslation(lang) ?? {};
+
+  // Render the application shell with a sidebar containing navigation links, theme and language toggles, and a main content area for the children components
   return (
     <div className="min-h-screen bg-page">
       <AutoTranslationSync lang={lang} dict={autoDict} />
