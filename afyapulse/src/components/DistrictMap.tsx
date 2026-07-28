@@ -31,6 +31,7 @@ function bandFill(score: number): string {
   return "fill-status-critical";
 }
 
+// Return a stroke color class based on the health score of a facility, with different colors for good, warning, serious, and critical scores
 function bandStroke(score: number): string {
   if (score >= 80) return "stroke-status-good";
   if (score >= 60) return "stroke-status-warning";
