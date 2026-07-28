@@ -16,6 +16,7 @@ export function AlertList({ alerts, limit, lang = "en" }: { alerts: Alert[]; lim
     );
   }
 
+  // Render a list of alerts with links to the corresponding facility pages, including a status pill indicating the severity of each alert
   return (
     <ul className="divide-y divide-hairline overflow-hidden rounded-xl border border-hairline bg-surface">
       {shown.map((alert) => {
