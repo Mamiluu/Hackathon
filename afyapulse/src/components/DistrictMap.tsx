@@ -24,6 +24,7 @@ const WIDTH = 480;
 const HEIGHT = 320;
 const PADDING = 44;
 
+// Return a fill color class based on the health score of a facility, with different colors for good, warning, serious, and critical scores
 function bandFill(score: number): string {
   if (score >= 80) return "fill-status-good";
   if (score >= 60) return "fill-status-warning";
