@@ -44,6 +44,7 @@ const URGENCY_STROKE: Record<MapRoute["urgency"], string> = {
   info: "stroke-series-1",
 };
 
+// Project latitude and longitude to x and y coordinates within the SVG viewbox, taking into account the bounds of the facilities and padding
 function project(lat: number, lng: number, bounds: { minLat: number; maxLat: number; minLng: number; maxLng: number }) {
   const latRange = bounds.maxLat - bounds.minLat || 1;
   const lngRange = bounds.maxLng - bounds.minLng || 1;
