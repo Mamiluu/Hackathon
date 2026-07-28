@@ -12,6 +12,7 @@ export default async function CompliancePage() {
   await ensureAutoTranslated(lang);
   const stats = await gatherComplianceStats(lang);
 
+  // Render the compliance page with statistics and a compliance client component
   return (
     <div className="mx-auto max-w-4xl">
       <div className="mb-6">
