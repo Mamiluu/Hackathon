@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { setAutoTranslation, type Lang, type TranslationKey } from "@/lib/i18n/translations";
 
-/**
+/*
  * The server resolves auto-translated strings once per request (see ensureAutoTranslated) and
  * that cache lives in the server's copy of the translations module. This component mirrors the
  * resolved map into the browser's own copy of the same module on hydration, so client components
