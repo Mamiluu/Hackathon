@@ -1,1 +1,22 @@
-{}
+{
+  "appName": "AfyaPulse",
+  "appTagline": "Округ Килифи · Районное здравоохранение",
+  "navCommandCenter": "Центр управления",
+  "navRedistribution": "Перераспределение",
+  "navCopilot": "DHO Copilot",
+  "navIntake": "Полевой прием",
+  "navCompliance": "Соблюдение SHA",
+  "builtWithGemma": "Создано с помощью Gemma 4",
+  "builtWithGemmaDesc": "Мультимодальный прием, агентское перераспределение и районный помощник работают на базе встроенного вызова функций Gemma 4.",
+  "copyrightNotice": "© {year} Asya Hafidh. Все права защищены.",
+  "dashboardEyebrow": "Районный центр управления",
+  "dashboardSubtitle": "Статус в реальном времени по {count} основным медицинским учреждениям — запасы, койко-места, персонал и диагностика в одном представлении, с рисками, отмеченными ИИ, ниже.",
+  "statFacilities": "Мониторинг учреждений",
+  "statCriticalAlerts": "Критические оповещения",
+  "statNeedsAction": "Требуется действие",
+  "statAtRisk": "Риск отсутствия запасов",
+  "statOfEssential": "основных лекарственных средств",
+  "statAvgBeds": "Средняя занятость коек",
+  "statHealthScore": "Показатель здоровья округа",
+  "statPatientsToday": "{count} пациентов сегодня"
+}
