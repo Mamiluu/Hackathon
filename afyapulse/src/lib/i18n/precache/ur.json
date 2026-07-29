@@ -178,5 +178,8 @@
   "complianceDigitized": "ڈیجیٹلائز شدہ سہولیات",
   "complianceDispatched": "منتقلی بھیجی گئی / تجویز کی گئی",
   "complianceGenerate": "SHA تعمیل رپورٹ تیار کریں",
-  "complianceRegenerate": "رپورٹ دوبارہ تیار کریں"
+  "complianceRegenerate": "رپورٹ دوبارہ تیار کریں",
+  "complianceGenerating": "مسودہ تیار ہو رہا ہے...",
+  "complianceGeneratingSlow": "ابھی بھی مسودہ تیار ہو رہا ہے — Gemma کی تخلیق میں ایک منٹ تک لگ سکتا ہے، انتظار کرنے کا شکریہ...",
+  "complianceError": "ابھی رپورٹ تیار نہیں کی جا سکی — براہ کرم دوبارہ کوشش کریں۔"
 }
