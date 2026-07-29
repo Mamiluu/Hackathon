@@ -176,5 +176,10 @@
   "complianceRegenerate": "Bericht regenerieren",
   "complianceGenerating": "Entwurf wird erstellt…",
   "complianceGeneratingSlow": "Entwurf wird noch erstellt — Die Gemma-Generierung kann bis zu eine Minute dauern, vielen Dank für Ihre Geduld…",
-  "complianceError": "Der Bericht konnte gerade nicht erstellt werden — bitte versuchen Sie es erneut."
+  "complianceError": "Der Bericht konnte gerade nicht erstellt werden — bitte versuchen Sie es erneut.",
+  "copyrightNotice": "© {year} Asya Hafidh. Alle Rechte vorbehalten.",
+  "traceCascadeCheck": "Kaskadenprüfung",
+  "traceCascadeCheckSafe": "Bis Tag 21 als sicher verifiziert — die Quelle fällt später im Prognosezeitraum nicht unter ihren eigenen Puffer.",
+  "traceCascadeCheckAdjusted": "Menge begrenzt — die volle Menge hätte dazu geführt, dass die Quelle später in ihrer eigenen Prognose einen Mangel aufweist, daher bleibt diese Übertragung innerhalb dessen, was sie sicher abgeben kann.",
+  "redistReasoningCascadeAdjusted": "Prognose für {horizon} Tage im Voraus: {dest} wird noch {days} Tage {item} übrig haben. {source} könnte zu diesem Zeitpunkt {original} {unit} abgeben, aber es wurden nur {capped} {unit} versandt — der Versand der vollen Menge hätte dazu geführt, dass {source} bis zum Tag {cascadeDay} derselben Prognose unter seinen eigenen Puffer fällt, {distance}km entfernt (~{minutes} Min. auf der Straße). Die Übertragung verhindert dennoch den Mangel bei {dest}, ohne einen neuen bei {source} zu verursachen."
 }
