@@ -1,1 +1,22 @@
-{}
+{
+  "appName": "AfyaPulse",
+  "appTagline": "Kabupaten Kilifi · Kesehatan Distrik",
+  "navCommandCenter": "Pusat Komando",
+  "navRedistribution": "Redistribusi",
+  "navCopilot": "Copilot DHO",
+  "navIntake": "Intake Lapangan",
+  "navCompliance": "Kepatuhan SHA",
+  "builtWithGemma": "Dibangun dengan Gemma 4",
+  "builtWithGemmaDesc": "Intake multimodal, redistribusi agentic, dan copilot distrik ditenagai oleh pemanggilan fungsi asli Gemma 4.",
+  "copyrightNotice": "© {year} Asya Hafidh. Hak cipta dilindungi undang-undang.",
+  "dashboardEyebrow": "Pusat Komando Distrik",
+  "dashboardSubtitle": "Status langsung di {count} fasilitas kesehatan utama — stok, tempat tidur, staf, dan diagnostik dalam satu tampilan, dengan risiko yang ditandai AI di bawah ini.",
+  "statFacilities": "Fasilitas yang dipantau",
+  "statCriticalAlerts": "Peringatan kritis",
+  "statNeedsAction": "Perlu tindakan",
+  "statAtRisk": "Berisiko kehabisan stok",
+  "statOfEssential": "obat-obatan esensial",
+  "statAvgBeds": "Rata-rata okupansi tempat tidur",
+  "statHealthScore": "Skor kesehatan kabupaten",
+  "statPatientsToday": "{count} pasien hari ini"
+}
