@@ -176,5 +176,10 @@
   "complianceRegenerate": "重新生成报告",
   "complianceGenerating": "正在起草…",
   "complianceGeneratingSlow": "仍在起草中 —— Gemma 生成可能需要长达一分钟，感谢您的耐心等待…",
-  "complianceError": "刚才无法生成报告 —— 请重试。"
+  "complianceError": "刚才无法生成报告 —— 请重试。",
+  "copyrightNotice": "© {year} Asya Hafidh. 保留所有权利。",
+  "traceCascadeCheck": "级联检查",
+  "traceCascadeCheckSafe": "经核实至第 21 天是安全的 —— 在预测期后期，源端不会低于其自身的缓冲量。",
+  "traceCascadeCheckAdjusted": "数量已封顶 —— 若按全额发送，会导致源端在后续预测中出现缺口，因此此次转移量维持在源端可安全提供的范围内。",
+  "redistReasoningCascadeAdjusted": "预测未来 {horizon} 天：{dest} 将剩余 {days} 天的 {item}。届时 {source} 可提供 {original} {unit}，但仅调度了 {capped} {unit} —— 若发送全额，在同一预测期的第 {cascadeDay} 天，{source} 将低于其自身的缓冲量，距离 {distance}km (~{minutes} 分钟车程)。此次转移仍能预先解决 {dest} 的缺口，且不会在 {source} 产生新的缺口。"
 }
