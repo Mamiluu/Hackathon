@@ -176,5 +176,10 @@
   "complianceRegenerate": "Régénérer le rapport",
   "complianceGenerating": "Rédaction en cours…",
   "complianceGeneratingSlow": "Rédaction toujours en cours — la génération par Gemma peut prendre jusqu'à une minute, merci de votre patience…",
-  "complianceError": "Impossible de générer le rapport pour le moment — veuillez réessayer."
+  "complianceError": "Impossible de générer le rapport pour le moment — veuillez réessayer.",
+  "copyrightNotice": "© {year} Asya Hafidh. Tous droits réservés.",
+  "traceCascadeCheck": "Vérification de la cascade",
+  "traceCascadeCheckSafe": "Vérifié sans risque jusqu'au jour 21 — la source ne descend pas en dessous de sa propre réserve plus tard dans l'horizon.",
+  "traceCascadeCheckAdjusted": "Quantité plafonnée — le montant total aurait laissé la source en pénurie plus tard dans sa propre prévision, donc ce transfert reste dans ce qu'elle peut accorder en toute sécurité.",
+  "redistReasoningCascadeAdjusted": "Projection à {horizon} jours : {dest} aura {days} jours de {item} restants. {source} pourrait accorder {original} {unit} à ce moment-là, mais seulement {capped} {unit} ont été expédiés — l'envoi de la totalité aurait laissé {source} en dessous de sa propre réserve au jour {cascadeDay} de la même prévision, à {distance} km (~{minutes} min par la route). Le transfert anticipe tout de même la pénurie de {dest} sans en créer une nouvelle à {source}."
 }
