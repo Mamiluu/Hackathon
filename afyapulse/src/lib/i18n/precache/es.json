@@ -176,5 +176,10 @@
   "complianceRegenerate": "Regenerar informe",
   "complianceGenerating": "Redactando…",
   "complianceGeneratingSlow": "Aún redactando — la generación de Gemma puede tardar hasta un minuto, gracias por esperar…",
-  "complianceError": "No se pudo generar el informe en este momento; por favor, inténtelo de nuevo."
+  "complianceError": "No se pudo generar el informe en este momento; por favor, inténtelo de nuevo.",
+  "copyrightNotice": "© {year} Asya Hafidh. Todos los derechos reservados.",
+  "traceCascadeCheck": "Verificación en cascada",
+  "traceCascadeCheckSafe": "Verificado como seguro hasta el día 21 — la fuente no cae por debajo de su propio margen más adelante en el horizonte.",
+  "traceCascadeCheckAdjusted": "Cantidad limitada — el monto total habría dejado a la fuente con un déficit más adelante en su propio pronóstico, por lo que esta transferencia se mantiene dentro de lo que puede ceder de forma segura.",
+  "redistReasoningCascadeAdjusted": "Proyección a {horizon} días: a {dest} le quedarán {days} días de {item}. {source} podría haber cedido {original} {unit} en ese momento, pero solo se despacharon {capped} {unit} — enviar el monto total habría dejado a {source} por debajo de su propio margen para el día {cascadeDay} del mismo pronóstico, a {distance}km de distancia (~{minutes} min por carretera). La transferencia aún previene el desabastecimiento de {dest} sin crear uno nuevo en {source}."
 }
