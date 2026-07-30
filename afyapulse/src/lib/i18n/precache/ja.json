@@ -178,5 +178,8 @@
   "complianceDigitized": "デジタル化済みの施設",
   "complianceDispatched": "発送済み / 提案済みの移送",
   "complianceGenerate": "SHAコンプライアンスレポートを生成",
-  "complianceRegenerate": "レポートを再生成"
+  "complianceRegenerate": "レポートを再生成",
+  "complianceGenerating": "作成中…",
+  "complianceGeneratingSlow": "作成中です — Gemmaによる生成には最大1分かかる場合があります。お待ちいただきありがとうございます…",
+  "complianceError": "現在、レポートを作成できませんでした — もう一度お試しください。"
 }
