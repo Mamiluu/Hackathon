@@ -1,1 +1,22 @@
-{}
+{
+  "appName": "AfyaPulse",
+  "appTagline": "킬리피 카운티 · 지역 보건",
+  "navCommandCenter": "커맨드 센터",
+  "navRedistribution": "재배분",
+  "navCopilot": "DHO 코파일럿",
+  "navIntake": "현장 접수",
+  "navCompliance": "SHA 준수",
+  "builtWithGemma": "Gemma 4로 구축됨",
+  "builtWithGemmaDesc": "멀티모달 접수, 에이전트 기반 재배분 및 지역 코파일럿은 Gemma 4의 네이티브 함수 호출 기능을 기반으로 작동합니다.",
+  "copyrightNotice": "© {year} Asya Hafidh. All rights reserved.",
+  "dashboardEyebrow": "지역 커맨드 센터",
+  "dashboardSubtitle": "{count}개 주요 보건 시설의 실시간 상태 — 재고, 병상, 인력 및 진단 현황을 한눈에 확인하고, 아래에서 AI가 표시한 위험 요소를 확인하세요.",
+  "statFacilities": "모니터링 중인 시설",
+  "statCriticalAlerts": "심각한 경고",
+  "statNeedsAction": "조치 필요",
+  "statAtRisk": "품절 위험",
+  "statOfEssential": "필수 의약품",
+  "statAvgBeds": "평균 병상 점유율",
+  "statHealthScore": "카운티 건강 점수",
+  "statPatientsToday": "오늘 {count}명의 환자"
+}
