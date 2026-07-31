@@ -237,3 +237,26 @@ body {
     display: none;
   }
 }
+
+/* Custom language listbox -- see components/LanguageToggle.tsx for why this replaces <select> */
+.lang-menu {
+  transform-origin: bottom left;
+  animation: lang-menu-in 0.15s ease-out both;
+}
+
+@keyframes lang-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lang-menu {
+    animation: none;
+  }
+}
