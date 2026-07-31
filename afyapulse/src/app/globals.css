@@ -117,3 +117,106 @@ body {
     font-variant-numeric: tabular-nums;
   }
 }
+
+/* Preloader -- see components/Preloader.tsx for why this exists */
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  background: var(--page);
+  overflow: hidden;
+  animation: preloader-fade-in 0.25s ease-out both;
+  transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+.preloader-exit {
+  opacity: 0;
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+.preloader-grid {
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(to bottom, var(--gridline) 0, var(--gridline) 1px, transparent 1px, transparent 28px);
+  opacity: 0.35;
+  mask-image: linear-gradient(to bottom, transparent, black 30%, black 70%, transparent);
+  animation: preloader-scan 2s linear both;
+}
+
+.preloader-glow {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 999px;
+  background: radial-gradient(circle, var(--series-1) 0%, transparent 70%);
+  opacity: 0;
+  animation: preloader-beat 0.9s ease-out 0.1s 2;
+}
+
+.preloader-mark {
+  color: var(--series-1);
+  stroke-dasharray: 120;
+  stroke-dashoffset: 120;
+  animation: preloader-draw 0.7s cubic-bezier(0.65, 0, 0.35, 1) 0.15s forwards;
+  filter: drop-shadow(0 0 6px var(--series-1));
+}
+
+.preloader-word {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-primary);
+  opacity: 0;
+  transform: translateY(4px);
+  animation: preloader-word-in 0.5s ease-out 0.85s forwards;
+}
+
+@keyframes preloader-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes preloader-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes preloader-beat {
+  0% { opacity: 0; transform: scale(0.6); }
+  35% { opacity: 0.35; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.4); }
+}
+
+@keyframes preloader-word-in {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes preloader-scan {
+  from { background-position-y: 0; }
+  to { background-position-y: 120px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .preloader,
+  .preloader-grid,
+  .preloader-glow,
+  .preloader-mark,
+  .preloader-word {
+    animation: none !important;
+  }
+  .preloader-mark {
+    stroke-dashoffset: 0;
+  }
+  .preloader-word {
+    opacity: 1;
+    transform: none;
+  }
+  .preloader-glow {
+    display: none;
+  }
+}

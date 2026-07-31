@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AppShell } from "@/components/AppShell";
+import { Preloader } from "@/components/Preloader";
 
 export const metadata: Metadata = {
   title: "AfyaPulse — District Health Nervous System",
@@ -16,6 +17,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased">
+        <Preloader />
         <AppShell>{children}</AppShell>
       </body>
     </html>
