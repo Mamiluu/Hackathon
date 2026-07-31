@@ -19,7 +19,7 @@ export function Preloader() {
 
   useEffect(() => {
     const exitTimer = setTimeout(() => setPhase("exit"), 1700);
-    const doneTimer = setTimeout(() => setPhase("done"), 2000);
+    const doneTimer = setTimeout(() => setPhase("done"), 4000);
     return () => {
       clearTimeout(exitTimer);
       clearTimeout(doneTimer);
