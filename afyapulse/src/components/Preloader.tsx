@@ -5,69 +5,45 @@ import { useEffect, useRef, useState } from "react";
 type Phase = "enter" | "exit" | "done";
 
 /**
- * The boot moment for the "District Health Nervous System" -- a real vital-signs monitor
- * coming online, not a spinner with a logo on it. A continuously-scrolling cardiac trace
- * (canvas-drawn, not a static SVG icon) runs inside a HUD-bracketed frame while a monospace
- * boot log calls out the system's actual subsystems, ending in a confirmed "SYSTEM NOMINAL"
- * before dissolving into the real (light-themed) dashboard underneath.
- *
- * Deliberately dark-screen for these two seconds regardless of the app's own light/dark
- * setting -- a monitor readout that looked like light mode wouldn't read as one. The
- * dashboard loads in parallel underneath the whole time; these two seconds are a brand beat,
- * never added latency. Mounted once per real page load -- the App Router keeps this layout
- * instance alive across client-side navigation, so it naturally only reappears on an actual
- * reload or first visit.
+ * The boot moment for AfyaPulse: a living, breathing pulse rendered as a smooth organic
+ * waveform (not clinical EKG spikes) in a blue-to-teal gradient pulled straight from the
+ * existing chart palette (--series-1, --series-5) -- vitality, not diagnostics. Sits on the
+ * app's own page background so it matches whichever theme the visitor already has, rather
+ * than forcing a detour. The dashboard loads underneath in parallel the whole time; these two
+ * seconds are a brand beat, never added latency. Mounted once per real page load -- the App
+ * Router keeps this layout instance alive across client-side navigation, so it naturally only
+ * reappears on an actual reload or first visit.
  */
 
-const BEAT_POINTS: [number, number][] = [
-  [0.0, 0],
-  [0.14, 0],
-  [0.18, 0.12],
-  [0.22, 0],
-  [0.3, 0],
-  [0.335, -0.12],
-  [0.36, 1],
-  [0.385, -0.55],
-  [0.41, 0],
-  [0.55, 0],
-  [0.63, 0.22],
-  [0.72, 0],
-  [1.0, 0],
-];
-
-function beatY(t: number): number {
-  const u = ((t % 1) + 1) % 1;
-  for (let i = 0; i < BEAT_POINTS.length - 1; i++) {
-    const [x0, y0] = BEAT_POINTS[i];
-    const [x1, y1] = BEAT_POINTS[i + 1];
-    if (u >= x0 && u <= x1) {
-      const f = (u - x0) / (x1 - x0 || 1);
-      return y0 + (y1 - y0) * f;
-    }
-  }
-  return 0;
+function waveY(xNorm: number, t: number): number {
+  // Sum of a few incommensurate sine waves -- the classic technique for a signal that reads
+  // as alive rather than a mechanical repeating loop.
+  const k = xNorm * Math.PI * 2;
+  return (
+    Math.sin(k * 1.0 + t * 1.6) * 0.55 +
+    Math.sin(k * 2.3 - t * 1.1) * 0.22 +
+    Math.sin(k * 0.6 + t * 2.4) * 0.15
+  );
 }
 
-const STATUS_LINES = ["INITIALIZING DISTRICT HEALTH NETWORK", "SYNCING FACILITY TELEMETRY", "CALIBRATING FORECAST ENGINE"];
+const PARTICLES = [
+  { left: 18, delay: 0, duration: 1900 },
+  { left: 34, delay: 260, duration: 2100 },
+  { left: 50, delay: 120, duration: 1800 },
+  { left: 64, delay: 420, duration: 2000 },
+  { left: 78, delay: 60, duration: 1950 },
+];
 
 export function Preloader() {
   const [phase, setPhase] = useState<Phase>("enter");
-  const [lineIndex, setLineIndex] = useState(0);
-  const [ready, setReady] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const exitTimer = setTimeout(() => setPhase("exit"), 1700);
     const doneTimer = setTimeout(() => setPhase("done"), 2000);
-    const l1 = setTimeout(() => setLineIndex(1), 480);
-    const l2 = setTimeout(() => setLineIndex(2), 920);
-    const readyTimer = setTimeout(() => setReady(true), 1380);
     return () => {
       clearTimeout(exitTimer);
       clearTimeout(doneTimer);
-      clearTimeout(l1);
-      clearTimeout(l2);
-      clearTimeout(readyTimer);
     };
   }, []);
 
@@ -84,51 +60,41 @@ export function Preloader() {
     canvas.height = cssHeight * dpr;
     ctx.scale(dpr, dpr);
 
-    function drawTrace(offsetBeats: number) {
+    const gradient = ctx.createLinearGradient(0, 0, cssWidth, 0);
+    gradient.addColorStop(0, "#2a78d6");
+    gradient.addColorStop(1, "#1baf7a");
+
+    function drawWave(t: number) {
       if (!ctx) return;
       ctx.clearRect(0, 0, cssWidth, cssHeight);
-      ctx.lineWidth = 2.2;
+      const midY = cssHeight / 2;
+      const amp = cssHeight * 0.32;
+
+      ctx.beginPath();
+      ctx.lineWidth = 2.6;
       ctx.lineJoin = "round";
       ctx.lineCap = "round";
-      ctx.strokeStyle = "#5BC8FF";
-      ctx.shadowColor = "#5BC8FF";
-      ctx.shadowBlur = 8;
+      ctx.strokeStyle = gradient;
+      ctx.shadowColor = "#4fb3a8";
+      ctx.shadowBlur = 16;
 
-      const beatsVisible = 2.4;
-      const pxPerBeat = cssWidth / beatsVisible;
-      const midY = cssHeight * 0.56;
-      const amp = cssHeight * 0.34;
-
-      ctx.beginPath();
-      let lastX = 0;
-      let lastY = midY;
-      for (let x = 0; x <= cssWidth; x += 2) {
-        const t = offsetBeats - (cssWidth - x) / pxPerBeat;
-        const y = midY - beatY(t) * amp;
+      for (let x = 0; x <= cssWidth; x += 3) {
+        const y = midY - waveY(x / cssWidth, t) * amp;
         if (x === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
-        lastX = x;
-        lastY = y;
       }
       ctx.stroke();
-
-      ctx.beginPath();
-      ctx.fillStyle = "#EAF8FF";
-      ctx.shadowBlur = 14;
-      ctx.arc(lastX, lastY, 3, 0, Math.PI * 2);
-      ctx.fill();
     }
 
     if (reduceMotion) {
-      drawTrace(0.72); // single static frame, no animation loop
+      drawWave(0.6);
       return;
     }
 
     let raf = 0;
     const start = performance.now();
-    const beatDurationMs = 900;
     function tick(now: number) {
-      drawTrace((now - start) / beatDurationMs);
+      drawWave((now - start) / 1000);
       raf = requestAnimationFrame(tick);
     }
     raf = requestAnimationFrame(tick);
@@ -139,15 +105,21 @@ export function Preloader() {
 
   return (
     <div className={`preloader${phase === "exit" ? " preloader-exit" : ""}`} role="status" aria-label="Loading AfyaPulse">
-      <div className="preloader-scanlines" aria-hidden />
-      <div className="preloader-frame" aria-hidden>
-        <canvas ref={canvasRef} className="preloader-canvas" />
+      <div className="preloader-aura" aria-hidden />
+      <div className="preloader-particles" aria-hidden>
+        {PARTICLES.map((p, i) => (
+          <span
+            key={i}
+            className="preloader-particle"
+            style={{ left: `${p.left}%`, animationDelay: `${p.delay}ms`, animationDuration: `${p.duration}ms` }}
+          />
+        ))}
       </div>
-      <div className={`preloader-readout${ready ? " is-ready" : ""}`} aria-hidden>
-        <span>{ready ? "SYSTEM NOMINAL" : STATUS_LINES[lineIndex]}</span>
-        <span className="preloader-cursor" />
+      <canvas ref={canvasRef} className="preloader-wave" />
+      <div className="preloader-word-wrap">
+        <div className="preloader-word">AfyaPulse</div>
+        <div className="preloader-underline" aria-hidden />
       </div>
-      <div className="preloader-word">AfyaPulse</div>
     </div>
   );
 }

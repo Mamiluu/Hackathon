@@ -127,8 +127,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1.1rem;
-  background: radial-gradient(120% 100% at 50% 40%, #0e1a20 0%, #05090b 70%);
+  background: var(--page);
   overflow: hidden;
   animation: preloader-fade-in 0.3s ease-out both;
   transition: opacity 0.35s ease, filter 0.35s ease;
@@ -140,83 +139,66 @@ body {
   pointer-events: none;
 }
 
-.preloader-scanlines {
+.preloader-aura {
   position: absolute;
-  inset: 0;
-  background-image: repeating-linear-gradient(to bottom, rgba(150, 220, 255, 0.06) 0, rgba(150, 220, 255, 0.06) 1px, transparent 1px, transparent 3px);
-  mix-blend-mode: screen;
+  width: 480px;
+  height: 480px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(42, 120, 214, 0.16) 0%, transparent 70%);
+  animation: preloader-breathe 2.6s ease-in-out infinite;
 }
 
-.preloader-frame {
+.preloader-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.preloader-particle {
+  position: absolute;
+  bottom: 42%;
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--series-5);
+  opacity: 0;
+  animation-name: preloader-particle-rise;
+  animation-timing-function: ease-out;
+  animation-iteration-count: infinite;
+}
+
+.preloader-wave {
   position: relative;
-  width: min(360px, 78vw);
-  height: 92px;
-  border: 1px solid rgba(120, 200, 255, 0.16);
-  border-radius: 6px;
-  background: rgba(14, 26, 32, 0.55);
-  box-shadow: inset 0 0 26px rgba(91, 200, 255, 0.07);
+  width: min(380px, 82vw);
+  height: 100px;
 }
 
-.preloader-frame::before,
-.preloader-frame::after {
-  content: "";
-  position: absolute;
-  width: 14px;
-  height: 14px;
-}
-.preloader-frame::before {
-  top: -1px;
-  left: -1px;
-  border-top: 2px solid rgba(150, 220, 255, 0.6);
-  border-left: 2px solid rgba(150, 220, 255, 0.6);
-}
-.preloader-frame::after {
-  bottom: -1px;
-  right: -1px;
-  border-bottom: 2px solid rgba(150, 220, 255, 0.6);
-  border-right: 2px solid rgba(150, 220, 255, 0.6);
-}
-
-.preloader-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.preloader-readout {
-  font-family: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
-  font-size: 0.68rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(180, 225, 255, 0.75);
-  min-height: 1.2em;
+.preloader-word-wrap {
+  position: relative;
+  margin-top: 0.6rem;
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 0.4rem;
 }
 
-.preloader-readout.is-ready {
-  color: #8cf5c0;
-}
-
-.preloader-cursor {
-  display: inline-block;
-  width: 6px;
-  height: 11px;
-  background: currentColor;
-  animation: preloader-cursor-blink 0.9s steps(1) infinite;
-}
-
 .preloader-word {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   font-size: 1rem;
   font-weight: 600;
   letter-spacing: 0.01em;
-  color: #eaf6ff;
+  color: var(--text-primary);
   opacity: 0;
   transform: translateY(4px);
-  animation: preloader-word-in 0.5s ease-out 1.35s forwards;
+  animation: preloader-word-in 0.5s ease-out 1s forwards;
+}
+
+.preloader-underline {
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(to right, var(--series-1), var(--series-5));
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: preloader-underline-draw 0.6s ease-out 1.2s forwards;
 }
 
 @keyframes preloader-fade-in {
@@ -224,18 +206,34 @@ body {
   to { opacity: 1; }
 }
 
+@keyframes preloader-breathe {
+  0%, 100% { transform: scale(0.94); opacity: 0.8; }
+  50% { transform: scale(1.04); opacity: 1; }
+}
+
+@keyframes preloader-particle-rise {
+  0% { transform: translateY(0); opacity: 0; }
+  15% { opacity: 0.85; }
+  100% { transform: translateY(-64px); opacity: 0; }
+}
+
 @keyframes preloader-word-in {
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes preloader-cursor-blink {
-  0%, 49% { opacity: 1; }
-  50%, 100% { opacity: 0; }
+@keyframes preloader-underline-draw {
+  to { transform: scaleX(1); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .preloader-cursor {
+  .preloader-aura,
+  .preloader-particle {
     animation: none;
-    opacity: 1;
+  }
+  .preloader-aura {
+    opacity: 0.85;
+  }
+  .preloader-particle {
+    display: none;
   }
 }
